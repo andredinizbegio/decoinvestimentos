@@ -112,6 +112,13 @@
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.03);
         }
 
+        /* Valores em reais e tickers borrados na seção de Rentabilidade */
+        .deco-blur {
+            filter: blur(5px);
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
         /* Card Hero com Transparência Extrema e Destaque Holográfico */
         .hero-ultra-glass {
             backdrop-filter: blur(20px);
@@ -546,7 +553,7 @@
                 <div class="glass-card border rounded-3xl p-6 sm:p-8 flex flex-col justify-between min-w-0">
                     <div>
                         <h3 class="text-lg font-bold dark:text-white text-slate-800 mb-1">Posição Atual</h3>
-                        <p class="text-[11px] dark:text-slate-400 text-slate-500 mb-6">Alocação por ativo com base na posição atual da carteira • Total R$ 3.372.769,67</p>
+                        <p class="text-[11px] dark:text-slate-400 text-slate-500 mb-6">Alocação por ativo com base na posição atual da carteira • Total <span class="deco-blur">R$ 3.372.769,67</span></p>
                     </div>
 
                     <div class="flex flex-col sm:flex-row items-center justify-center gap-6 my-4">
@@ -576,15 +583,15 @@
 
                         <!-- Legenda dos Ativos -->
                         <div class="grid grid-cols-2 gap-x-4 gap-y-2 text-[11px] font-medium">
-                            <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-orange-500"></span><span class="dark:text-slate-300 text-slate-700">JHSF3 (30,6%)</span></div>
-                            <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-cyan-500"></span><span class="dark:text-slate-300 text-slate-700">BBAS3 (23,7%)</span></div>
-                            <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span><span class="dark:text-slate-300 text-slate-700">BBSE3 (9,6%)</span></div>
-                            <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-yellow-500"></span><span class="dark:text-slate-300 text-slate-700">LEVE3 (6,7%)</span></div>
-                            <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-pink-500"></span><span class="dark:text-slate-300 text-slate-700">CXSE3 (5,6%)</span></div>
-                            <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-teal-400"></span><span class="dark:text-slate-300 text-slate-700">PINE4 (5,4%)</span></div>
-                            <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-indigo-400"></span><span class="dark:text-slate-300 text-slate-700">CMIG4 (5,3%)</span></div>
-                            <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-purple-400"></span><span class="dark:text-slate-300 text-slate-700">ITSA4 (4,7%)</span></div>
-                            <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span><span class="dark:text-slate-300 text-slate-700">AZZA3 (4,3%)</span></div>
+                            <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-orange-500"></span><span class="dark:text-slate-300 text-slate-700"><span class="deco-blur">JHSF3</span> (30,6%)</span></div>
+                            <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-cyan-500"></span><span class="dark:text-slate-300 text-slate-700"><span class="deco-blur">BBAS3</span> (23,7%)</span></div>
+                            <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span><span class="dark:text-slate-300 text-slate-700"><span class="deco-blur">BBSE3</span> (9,6%)</span></div>
+                            <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-yellow-500"></span><span class="dark:text-slate-300 text-slate-700"><span class="deco-blur">LEVE3</span> (6,7%)</span></div>
+                            <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-pink-500"></span><span class="dark:text-slate-300 text-slate-700"><span class="deco-blur">CXSE3</span> (5,6%)</span></div>
+                            <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-teal-400"></span><span class="dark:text-slate-300 text-slate-700"><span class="deco-blur">PINE4</span> (5,4%)</span></div>
+                            <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-indigo-400"></span><span class="dark:text-slate-300 text-slate-700"><span class="deco-blur">CMIG4</span> (5,3%)</span></div>
+                            <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-purple-400"></span><span class="dark:text-slate-300 text-slate-700"><span class="deco-blur">ITSA4</span> (4,7%)</span></div>
+                            <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span><span class="dark:text-slate-300 text-slate-700"><span class="deco-blur">AZZA3</span> (4,3%)</span></div>
                             <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-slate-400"></span><span class="dark:text-slate-300 text-slate-700">Outros (4,0%)</span></div>
                         </div>
                     </div>
@@ -601,84 +608,84 @@
                     <!-- Visualizador de Barras Semestrais -->
                     <div class="h-48 flex items-end justify-between gap-1.5 pt-6 pb-2 px-2 border-b dark:border-slate-800/80 border-slate-200 relative overflow-x-auto">
                         <!-- Linhas de Grade de Fundo -->
-                        <div class="absolute inset-x-0 top-0 border-t border-dashed dark:border-slate-800/60 border-slate-200 text-[9px] text-slate-400 pt-0.5">R$ 120k</div>
-                        <div class="absolute inset-x-0 top-1/4 border-t border-dashed dark:border-slate-800/60 border-slate-200 text-[9px] text-slate-400 pt-0.5">R$ 90k</div>
-                        <div class="absolute inset-x-0 top-2/4 border-t border-dashed dark:border-slate-800/60 border-slate-200 text-[9px] text-slate-400 pt-0.5">R$ 60k</div>
-                        <div class="absolute inset-x-0 top-3/4 border-t border-dashed dark:border-slate-800/60 border-slate-200 text-[9px] text-slate-400 pt-0.5">R$ 30k</div>
+                        <div class="absolute inset-x-0 top-0 border-t border-dashed dark:border-slate-800/60 border-slate-200 text-[9px] text-slate-400 pt-0.5 deco-blur">R$ 120k</div>
+                        <div class="absolute inset-x-0 top-1/4 border-t border-dashed dark:border-slate-800/60 border-slate-200 text-[9px] text-slate-400 pt-0.5 deco-blur">R$ 90k</div>
+                        <div class="absolute inset-x-0 top-2/4 border-t border-dashed dark:border-slate-800/60 border-slate-200 text-[9px] text-slate-400 pt-0.5 deco-blur">R$ 60k</div>
+                        <div class="absolute inset-x-0 top-3/4 border-t border-dashed dark:border-slate-800/60 border-slate-200 text-[9px] text-slate-400 pt-0.5 deco-blur">R$ 30k</div>
 
                         <!-- Colunas (18S1 até 26S2 - Semestre corrente e futuros em cinza) -->
                         <div class="flex-1 flex flex-col items-center gap-1 z-10">
-                            <span class="text-[9px] text-[#72becf] font-mono">R$ 35</span>
+                            <span class="text-[9px] text-[#72becf] font-mono deco-blur">R$ 35</span>
                             <div class="w-full bg-[#387b8d]/60 rounded-t animate-bar" style="height: 10px; animation-delay: 0.1s;"></div>
                             <span class="text-[9px] text-slate-400">18S1</span>
                         </div>
                         <div class="flex-1 flex flex-col items-center gap-1 z-10">
-                            <span class="text-[9px] text-[#72becf] font-mono">R$ 792</span>
+                            <span class="text-[9px] text-[#72becf] font-mono deco-blur">R$ 792</span>
                             <div class="w-full bg-[#387b8d]/60 rounded-t animate-bar" style="height: 14px; animation-delay: 0.15s;"></div>
                             <span class="text-[9px] text-slate-400">18S2</span>
                         </div>
                         <div class="flex-1 flex flex-col items-center gap-1 z-10">
-                            <span class="text-[9px] text-[#72becf] font-mono">R$ 416</span>
+                            <span class="text-[9px] text-[#72becf] font-mono deco-blur">R$ 416</span>
                             <div class="w-full bg-[#387b8d]/60 rounded-t animate-bar" style="height: 12px; animation-delay: 0.2s;"></div>
                             <span class="text-[9px] text-slate-400">19S1</span>
                         </div>
                         <div class="flex-1 flex flex-col items-center gap-1 z-10">
-                            <span class="text-[9px] text-[#72becf] font-mono">R$ 1k</span>
+                            <span class="text-[9px] text-[#72becf] font-mono deco-blur">R$ 1k</span>
                             <div class="w-full bg-[#387b8d]/60 rounded-t animate-bar" style="height: 16px; animation-delay: 0.25s;"></div>
                             <span class="text-[9px] text-slate-400">19S2</span>
                         </div>
                         <div class="flex-1 flex flex-col items-center gap-1 z-10">
-                            <span class="text-[9px] text-[#72becf] font-mono">R$ 6k</span>
+                            <span class="text-[9px] text-[#72becf] font-mono deco-blur">R$ 6k</span>
                             <div class="w-full bg-[#387b8d]/60 rounded-t animate-bar" style="height: 22px; animation-delay: 0.3s;"></div>
                             <span class="text-[9px] text-slate-400">20S1</span>
                         </div>
                         <div class="flex-1 flex flex-col items-center gap-1 z-10">
-                            <span class="text-[9px] text-[#72becf] font-mono">R$ 7k</span>
+                            <span class="text-[9px] text-[#72becf] font-mono deco-blur">R$ 7k</span>
                             <div class="w-full bg-[#387b8d]/60 rounded-t animate-bar" style="height: 25px; animation-delay: 0.35s;"></div>
                             <span class="text-[9px] text-slate-400">21S1</span>
                         </div>
                         <div class="flex-1 flex flex-col items-center gap-1 z-10">
-                            <span class="text-[9px] text-[#72becf] font-mono">R$ 14k</span>
+                            <span class="text-[9px] text-[#72becf] font-mono deco-blur">R$ 14k</span>
                             <div class="w-full bg-[#387b8d]/60 rounded-t animate-bar" style="height: 35px; animation-delay: 0.4s;"></div>
                             <span class="text-[9px] text-slate-400">21S2</span>
                         </div>
                         <div class="flex-1 flex flex-col items-center gap-1 z-10">
-                            <span class="text-[9px] text-[#72becf] font-mono">R$ 39k</span>
+                            <span class="text-[9px] text-[#72becf] font-mono deco-blur">R$ 39k</span>
                             <div class="w-full bg-[#387b8d] rounded-t animate-bar" style="height: 60px; animation-delay: 0.45s;"></div>
                             <span class="text-[9px] text-slate-400">22S1</span>
                         </div>
                         <div class="flex-1 flex flex-col items-center gap-1 z-10">
-                            <span class="text-[9px] text-[#72becf] font-mono">R$ 44k</span>
+                            <span class="text-[9px] text-[#72becf] font-mono deco-blur">R$ 44k</span>
                             <div class="w-full bg-[#387b8d] rounded-t animate-bar" style="height: 68px; animation-delay: 0.5s;"></div>
                             <span class="text-[9px] text-slate-400">23S2</span>
                         </div>
                         <div class="flex-1 flex flex-col items-center gap-1 z-10">
-                            <span class="text-[9px] text-[#72becf] font-mono">R$ 51k</span>
+                            <span class="text-[9px] text-[#72becf] font-mono deco-blur">R$ 51k</span>
                             <div class="w-full bg-[#387b8d] rounded-t animate-bar" style="height: 76px; animation-delay: 0.55s;"></div>
                             <span class="text-[9px] text-slate-400">23S2</span>
                         </div>
                         <div class="flex-1 flex flex-col items-center gap-1 z-10">
-                            <span class="text-[9px] text-[#72becf] font-mono">R$ 68k</span>
+                            <span class="text-[9px] text-[#72becf] font-mono deco-blur">R$ 68k</span>
                             <div class="w-full bg-[#00598a] rounded-t animate-bar" style="height: 95px; animation-delay: 0.6s;"></div>
                             <span class="text-[9px] text-slate-400">24S2</span>
                         </div>
                         <div class="flex-1 flex flex-col items-center gap-1 z-10">
-                            <span class="text-[9px] text-[#72becf] font-mono">R$ 81k</span>
+                            <span class="text-[9px] text-[#72becf] font-mono deco-blur">R$ 81k</span>
                             <div class="w-full bg-[#00598a] rounded-t animate-bar" style="height: 110px; animation-delay: 0.65s;"></div>
                             <span class="text-[9px] text-slate-400">25S2</span>
                         </div>
                         <div class="flex-1 flex flex-col items-center gap-1 z-10">
-                            <span class="text-[9px] text-[#72becf] font-mono">R$ 78k</span>
+                            <span class="text-[9px] text-[#72becf] font-mono deco-blur">R$ 78k</span>
                             <div class="w-full bg-[#00598a] rounded-t animate-bar" style="height: 105px; animation-delay: 0.7s;"></div>
                             <span class="text-[9px] text-slate-400">25S2</span>
                         </div>
                         <div class="flex-1 flex flex-col items-center gap-1 z-10">
-                            <span class="text-[9px] text-slate-400 font-bold font-mono">R$ 120k</span>
+                            <span class="text-[9px] text-slate-400 font-bold font-mono deco-blur">R$ 120k</span>
                             <div class="w-full bg-slate-500 rounded-t animate-bar shadow-lg" style="height: 155px; animation-delay: 0.75s;"></div>
                             <span class="text-[9px] text-white font-bold">26S1</span>
                         </div>
                         <div class="flex-1 flex flex-col items-center gap-1 z-10">
-                            <span class="text-[9px] text-slate-400 font-mono">R$ 57k</span>
+                            <span class="text-[9px] text-slate-400 font-mono deco-blur">R$ 57k</span>
                             <div class="w-full bg-slate-600/80 rounded-t animate-bar" style="height: 80px; animation-delay: 0.8s;"></div>
                             <span class="text-[9px] text-slate-400">26S2</span>
                         </div>
@@ -697,123 +704,123 @@
                 <div class="h-44 flex items-end justify-between gap-1 pt-6 pb-2 px-1 relative border-b dark:border-slate-800/80 border-slate-200 overflow-x-auto">
                     <!-- Passado (Ago/25 a Fev/26 - azul) -->
                     <div class="flex flex-col items-center gap-1 min-w-[24px]">
-                        <span class="text-[8px] text-[#72becf]">R$ 25k</span>
+                        <span class="text-[8px] text-[#72becf] deco-blur">R$ 25k</span>
                         <div class="w-4 bg-[#387b8d] rounded-t animate-bar" style="height: 55px;"></div>
                         <span class="text-[8px] text-slate-400">Ago/25</span>
                     </div>
                     <div class="flex flex-col items-center gap-1 min-w-[24px]">
-                        <span class="text-[8px] text-[#72becf]">R$ 4k</span>
+                        <span class="text-[8px] text-[#72becf] deco-blur">R$ 4k</span>
                         <div class="w-4 bg-[#387b8d]/60 rounded-t animate-bar" style="height: 15px;"></div>
                         <span class="text-[8px] text-slate-400">Set/25</span>
                     </div>
                     <div class="flex flex-col items-center gap-1 min-w-[24px]">
-                        <span class="text-[8px] text-[#72becf]">R$ 6k</span>
+                        <span class="text-[8px] text-[#72becf] deco-blur">R$ 6k</span>
                         <div class="w-4 bg-[#387b8d]/60 rounded-t animate-bar" style="height: 20px;"></div>
                         <span class="text-[8px] text-slate-400">Out/25</span>
                     </div>
                     <div class="flex flex-col items-center gap-1 min-w-[24px]">
-                        <span class="text-[8px] text-[#72becf]">R$ 11k</span>
+                        <span class="text-[8px] text-[#72becf] deco-blur">R$ 11k</span>
                         <div class="w-4 bg-[#387b8d]/60 rounded-t animate-bar" style="height: 30px;"></div>
                         <span class="text-[8px] text-slate-400">Nov/25</span>
                     </div>
                     <div class="flex flex-col items-center gap-1 min-w-[24px]">
-                        <span class="text-[8px] text-[#72becf]">R$ 27k</span>
+                        <span class="text-[8px] text-[#72becf] deco-blur">R$ 27k</span>
                         <div class="w-4 bg-[#387b8d] rounded-t animate-bar" style="height: 60px;"></div>
                         <span class="text-[8px] text-slate-400">Dez/25</span>
                     </div>
                     <div class="flex flex-col items-center gap-1 min-w-[24px]">
-                        <span class="text-[8px] text-[#72becf]">R$ 14k</span>
+                        <span class="text-[8px] text-[#72becf] deco-blur">R$ 14k</span>
                         <div class="w-4 bg-[#387b8d]/60 rounded-t animate-bar" style="height: 38px;"></div>
                         <span class="text-[8px] text-slate-400">Jan/26</span>
                     </div>
                     <div class="flex flex-col items-center gap-1 min-w-[24px]">
-                        <span class="text-[8px] text-[#72becf]">R$ 8k</span>
+                        <span class="text-[8px] text-[#72becf] deco-blur">R$ 8k</span>
                         <div class="w-4 bg-[#387b8d]/60 rounded-t animate-bar" style="height: 25px;"></div>
                         <span class="text-[8px] text-slate-400">Fev/26</span>
                     </div>
                     <!-- Corrente e Futuros (Mar/26 em diante - Cinza) -->
                     <div class="flex flex-col items-center gap-1 min-w-[24px]">
-                        <span class="text-[8px] text-slate-400 font-bold">R$ 44k</span>
+                        <span class="text-[8px] text-slate-400 font-bold deco-blur">R$ 44k</span>
                         <div class="w-4 bg-slate-500 rounded-t animate-bar" style="height: 95px;"></div>
                         <span class="text-[8px] text-slate-400">Mar/26</span>
                     </div>
                     <div class="flex flex-col items-center gap-1 min-w-[24px]">
-                        <span class="text-[8px] text-slate-400">R$ 12k</span>
+                        <span class="text-[8px] text-slate-400 deco-blur">R$ 12k</span>
                         <div class="w-4 bg-slate-600/70 rounded-t animate-bar" style="height: 32px;"></div>
                         <span class="text-[8px] text-slate-400">Abr/26</span>
                     </div>
                     <div class="flex flex-col items-center gap-1 min-w-[24px]">
-                        <span class="text-[8px] text-slate-400">R$ 21k</span>
+                        <span class="text-[8px] text-slate-400 deco-blur">R$ 21k</span>
                         <div class="w-4 bg-slate-600 rounded-t animate-bar" style="height: 48px;"></div>
                         <span class="text-[8px] text-slate-400">Mai/26</span>
                     </div>
                     <div class="flex flex-col items-center gap-1 min-w-[24px]">
-                        <span class="text-[8px] text-slate-400">R$ 21k</span>
+                        <span class="text-[8px] text-slate-400 deco-blur">R$ 21k</span>
                         <div class="w-4 bg-slate-600 rounded-t animate-bar" style="height: 48px;"></div>
                         <span class="text-[8px] text-slate-400">Jun/26</span>
                     </div>
                     <div class="flex flex-col items-center gap-1 min-w-[24px]">
-                        <span class="text-[8px] text-slate-400">R$ 13k</span>
+                        <span class="text-[8px] text-slate-400 deco-blur">R$ 13k</span>
                         <div class="w-4 bg-slate-600/70 rounded-t animate-bar" style="height: 35px;"></div>
                         <span class="text-[8px] text-slate-400">Jul/26</span>
                     </div>
                     <div class="flex flex-col items-center gap-1 min-w-[24px]">
-                        <span class="text-[8px] text-slate-300 font-bold">R$ 31k</span>
+                        <span class="text-[8px] text-slate-300 font-bold deco-blur">R$ 31k</span>
                         <div class="w-4 bg-slate-500 rounded-t animate-bar" style="height: 70px;"></div>
                         <span class="text-[8px] text-white font-bold">Ago/26</span>
                     </div>
                     <div class="flex flex-col items-center gap-1 min-w-[24px]">
-                        <span class="text-[8px] text-slate-400">R$ 18k</span>
+                        <span class="text-[8px] text-slate-400 deco-blur">R$ 18k</span>
                         <div class="w-4 bg-slate-600/70 rounded-t animate-bar" style="height: 42px;"></div>
                         <span class="text-[8px] text-slate-400">Set/26</span>
                     </div>
                     <div class="flex flex-col items-center gap-1 min-w-[24px]">
-                        <span class="text-[8px] text-slate-400">R$ 11k</span>
+                        <span class="text-[8px] text-slate-400 deco-blur">R$ 11k</span>
                         <div class="w-4 bg-slate-600/70 rounded-t animate-bar" style="height: 30px;"></div>
                         <span class="text-[8px] text-slate-400">Out/26</span>
                     </div>
                     <div class="flex flex-col items-center gap-1 min-w-[24px]">
-                        <span class="text-[8px] text-slate-400">R$ 12k</span>
+                        <span class="text-[8px] text-slate-400 deco-blur">R$ 12k</span>
                         <div class="w-4 bg-slate-600/70 rounded-t animate-bar" style="height: 33px;"></div>
                         <span class="text-[8px] text-slate-400">Nov/26</span>
                     </div>
                     <div class="flex flex-col items-center gap-1 min-w-[24px]">
-                        <span class="text-[8px] text-slate-400">R$ 24k</span>
+                        <span class="text-[8px] text-slate-400 deco-blur">R$ 24k</span>
                         <div class="w-4 bg-slate-600 rounded-t animate-bar" style="height: 54px;"></div>
                         <span class="text-[8px] text-slate-400">Dez/26</span>
                     </div>
                     <div class="flex flex-col items-center gap-1 min-w-[24px]">
-                        <span class="text-[8px] text-slate-400">R$ 15k</span>
+                        <span class="text-[8px] text-slate-400 deco-blur">R$ 15k</span>
                         <div class="w-4 bg-slate-600/70 rounded-t animate-bar" style="height: 38px;"></div>
                         <span class="text-[8px] text-slate-400">Jan/27</span>
                     </div>
                     <div class="flex flex-col items-center gap-1 min-w-[24px]">
-                        <span class="text-[8px] text-slate-400 font-bold">R$ 34k</span>
+                        <span class="text-[8px] text-slate-400 font-bold deco-blur">R$ 34k</span>
                         <div class="w-4 bg-slate-500 rounded-t animate-bar" style="height: 76px;"></div>
                         <span class="text-[8px] text-slate-400">Fev/27</span>
                     </div>
                     <div class="flex flex-col items-center gap-1 min-w-[24px]">
-                        <span class="text-[8px] text-slate-400">R$ 18k</span>
+                        <span class="text-[8px] text-slate-400 deco-blur">R$ 18k</span>
                         <div class="w-4 bg-slate-600/70 rounded-t animate-bar" style="height: 42px;"></div>
                         <span class="text-[8px] text-slate-400">Mar/27</span>
                     </div>
                     <div class="flex flex-col items-center gap-1 min-w-[24px]">
-                        <span class="text-[8px] text-slate-400">R$ 16k</span>
+                        <span class="text-[8px] text-slate-400 deco-blur">R$ 16k</span>
                         <div class="w-4 bg-slate-600/70 rounded-t animate-bar" style="height: 38px;"></div>
                         <span class="text-[8px] text-slate-400">Abr/27</span>
                     </div>
                     <div class="flex flex-col items-center gap-1 min-w-[24px]">
-                        <span class="text-[8px] text-slate-400">R$ 9k</span>
+                        <span class="text-[8px] text-slate-400 deco-blur">R$ 9k</span>
                         <div class="w-4 bg-slate-600/70 rounded-t animate-bar" style="height: 24px;"></div>
                         <span class="text-[8px] text-slate-400">Mai/27</span>
                     </div>
                     <div class="flex flex-col items-center gap-1 min-w-[24px]">
-                        <span class="text-[8px] text-slate-400">R$ 24k</span>
+                        <span class="text-[8px] text-slate-400 deco-blur">R$ 24k</span>
                         <div class="w-4 bg-slate-600 rounded-t animate-bar" style="height: 54px;"></div>
                         <span class="text-[8px] text-slate-400">Jun/27</span>
                     </div>
                     <div class="flex flex-col items-center gap-1 min-w-[24px]">
-                        <span class="text-[8px] text-slate-400">R$ 11k</span>
+                        <span class="text-[8px] text-slate-400 deco-blur">R$ 11k</span>
                         <div class="w-4 bg-slate-600/70 rounded-t animate-bar" style="height: 30px;"></div>
                         <span class="text-[8px] text-slate-400">Jul/27</span>
                     </div>
@@ -827,21 +834,21 @@
                         <i data-lucide="target" class="w-3.5 h-3.5 text-[#72becf] shrink-0"></i>
                         <span class="truncate">PATRIMÔNIO</span>
                     </div>
-                    <div class="text-sm sm:text-base font-extrabold text-[#72becf] mt-2">R$ 3.372.770</div>
+                    <div class="text-sm sm:text-base font-extrabold text-[#72becf] mt-2 deco-blur">R$ 3.372.770</div>
                 </div>
                 <div class="glass-card border rounded-2xl p-4 flex flex-col justify-between">
                     <div class="flex items-center gap-2 text-[10px] text-slate-400 uppercase tracking-wider">
                         <i data-lucide="layers" class="w-3.5 h-3.5 text-[#72becf] shrink-0"></i>
                         <span class="truncate">INVESTIDO</span>
                     </div>
-                    <div class="text-sm sm:text-base font-extrabold text-[#72becf] mt-2">R$ 2.636.721</div>
+                    <div class="text-sm sm:text-base font-extrabold text-[#72becf] mt-2 deco-blur">R$ 2.636.721</div>
                 </div>
                 <div class="glass-card border rounded-2xl p-4 flex flex-col justify-between">
                     <div class="flex items-center gap-2 text-[10px] text-slate-400 uppercase tracking-wider">
                         <i data-lucide="trending-up" class="w-3.5 h-3.5 text-[#72becf] shrink-0"></i>
                         <span class="truncate">RESULTADO</span>
                     </div>
-                    <div class="text-sm sm:text-base font-extrabold text-[#72becf] mt-2">R$ 1.622.781</div>
+                    <div class="text-sm sm:text-base font-extrabold text-[#72becf] mt-2 deco-blur">R$ 1.622.781</div>
                 </div>
                 <div class="glass-card border rounded-2xl p-4 flex flex-col justify-between">
                     <div class="flex items-center gap-2 text-[10px] text-slate-400 uppercase tracking-wider">
@@ -862,7 +869,7 @@
                         <i data-lucide="wallet" class="w-3.5 h-3.5 text-[#72becf] shrink-0"></i>
                         <span class="truncate">PROVENTOS</span>
                     </div>
-                    <div class="text-sm sm:text-base font-extrabold text-[#72becf] mt-2">R$ 679.327</div>
+                    <div class="text-sm sm:text-base font-extrabold text-[#72becf] mt-2 deco-blur">R$ 679.327</div>
                 </div>
             </div>
 
