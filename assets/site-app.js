@@ -191,7 +191,7 @@
 
   function card(title, subtitle, bodyHtml, extraClass) {
     return (
-      '<div class="glass-card border rounded-3xl p-6 sm:p-8 ' + (extraClass || '') + '">' +
+      '<div class="glass-card border rounded-3xl p-6 sm:p-8 min-w-0 ' + (extraClass || '') + '">' +
         '<h3 class="text-lg font-bold dark:text-white text-slate-800 mb-1">' + title + '</h3>' +
         (subtitle ? '<p class="text-[11px] dark:text-slate-400 text-slate-500 mb-6">' + subtitle + '</p>' : '') +
         bodyHtml +
@@ -274,7 +274,7 @@
 
     var html = fields.map(function (f) {
       return (
-        '<div class="glass-card border rounded-2xl p-4 flex flex-col justify-between">' +
+        '<div class="glass-card border rounded-2xl p-4 flex flex-col justify-between min-w-0">' +
           '<div class="flex items-center gap-2 text-[10px] text-slate-400 uppercase tracking-wider">' +
             '<i data-lucide="' + f.icon + '" class="w-3.5 h-3.5 text-[#72becf] shrink-0"></i>' +
             '<span class="truncate">' + f.label + '</span>' +
@@ -588,7 +588,7 @@
     }).join('');
 
     var html =
-      '<div class="h-48 flex items-end justify-between gap-1.5 pt-6 pb-2 px-2 border-b dark:border-slate-800/80 border-slate-200 relative">' +
+      '<div class="h-48 flex items-end justify-between gap-1.5 pt-6 pb-2 px-2 border-b dark:border-slate-800/80 border-slate-200 relative overflow-x-auto">' +
         bars +
       '</div>';
     return card('Proventos Semestrais', 'Dividendos recebidos agregados por semestre', html);

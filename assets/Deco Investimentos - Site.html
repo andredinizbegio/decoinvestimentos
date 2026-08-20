@@ -533,7 +533,7 @@
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
                 
                 <!-- CARD 1: Posição Atual (Gráfico de Rosca) -->
-                <div class="glass-card border rounded-3xl p-6 sm:p-8 flex flex-col justify-between">
+                <div class="glass-card border rounded-3xl p-6 sm:p-8 flex flex-col justify-between min-w-0">
                     <div>
                         <h3 class="text-lg font-bold dark:text-white text-slate-800 mb-1">Posição Atual</h3>
                         <p class="text-[11px] dark:text-slate-400 text-slate-500 mb-6">Alocação por ativo com base na posição atual da carteira • Total R$ 3.372.769,67</p>
@@ -582,14 +582,14 @@
                 </div>
 
                 <!-- CARD 2: Proventos Semestrais (Gráfico de Barras Animado) -->
-                <div class="glass-card border rounded-3xl p-6 sm:p-8 flex flex-col justify-between">
+                <div class="glass-card border rounded-3xl p-6 sm:p-8 flex flex-col justify-between min-w-0">
                     <div>
                         <h3 class="text-lg font-bold dark:text-white text-slate-800 mb-1">Proventos Semestrais</h3>
                         <p class="text-[11px] dark:text-slate-400 text-slate-500 mb-6">Dividendos recebidos agregados por semestre</p>
                     </div>
 
                     <!-- Visualizador de Barras Semestrais -->
-                    <div class="h-48 flex items-end justify-between gap-1.5 pt-6 pb-2 px-2 border-b dark:border-slate-800/80 border-slate-200 relative">
+                    <div class="h-48 flex items-end justify-between gap-1.5 pt-6 pb-2 px-2 border-b dark:border-slate-800/80 border-slate-200 relative overflow-x-auto">
                         <!-- Linhas de Grade de Fundo -->
                         <div class="absolute inset-x-0 top-0 border-t border-dashed dark:border-slate-800/60 border-slate-200 text-[9px] text-slate-400 pt-0.5">R$ 120k</div>
                         <div class="absolute inset-x-0 top-1/4 border-t border-dashed dark:border-slate-800/60 border-slate-200 text-[9px] text-slate-400 pt-0.5">R$ 90k</div>
@@ -679,7 +679,7 @@
             </div>
 
             <!-- CARD CENTRAL: Estimativa de Dividendos Futuros -->
-            <div class="glass-card border rounded-3xl p-6 sm:p-8 mb-8">
+            <div class="glass-card border rounded-3xl p-6 sm:p-8 mb-8 min-w-0">
                 <h3 class="text-lg font-bold dark:text-white text-slate-800 mb-1">Estimativa de Dividendos Futuros</h3>
                 <p class="text-[11px] dark:text-slate-400 text-slate-500 mb-6">Dividendos recebidos nos últimos 12 meses e estimativas para os próximos 12 meses (meses correntes e futuros em cinza)</p>
 
