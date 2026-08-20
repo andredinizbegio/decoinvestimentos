@@ -1,0 +1,5 @@
+# Node
+node_modules/
+
+# Site gerado pelo build (regenerado a cada deploy)
+docs/

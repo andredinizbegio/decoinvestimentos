@@ -1,0 +1,1561 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deco Investimentos - Consultoria Financeira Humana</title>
+
+    <!-- CDNs das Bibliotecas (Tailwind CSS, Lucide Icons, Three.js) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <!-- Google Fonts: Plus Jakarta Sans, Inter & EB Garamond -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..700;1,400..700&family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'Inter', 'sans-serif'],
+                        garamond: ['EB Garamond', 'Garamond', 'serif'],
+                    },
+                    colors: {
+                        deco: {
+                            teal: '#387b8d',
+                            blue: '#00598a',
+                            lightTeal: '#4ca3b8',
+                            cyanGlow: '#72becf',
+                            darkBg: '#061016',
+                            darkCard: '#0f1d24',
+                            lightBg: '#f8fafc',
+                            lightCard: '#ffffff',
+                            gold: '#d4af37'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            overflow-x: hidden;
+            transition: background-color 0.4s ease, color 0.4s ease;
+        }
+
+        /* Estilos do Modo Escuro */
+        html.dark body {
+            background-color: #061016 !important;
+            color: #94a3b8 !important;
+        }
+
+        /* Estilos do Modo Claro */
+        html:not(.dark) body {
+            background-color: #f6f8fa !important;
+            color: #475569 !important;
+        }
+
+        /* Canvas Three.js Fixo no fundo com z-index garantido */
+        #webgl-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 1;
+            transition: opacity 0.5s ease;
+        }
+
+        header, main, footer {
+            position: relative;
+            z-index: 10;
+        }
+
+        .nav-link {
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .nav-link.active {
+            color: #72becf !important;
+            font-weight: 600;
+        }
+        html.dark .nav-link.active {
+            color: #72becf !important;
+        }
+
+        /* Card backdrop Blur com Transparência (Ultra Glassmorphism) */
+        .glass-card {
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+        html.dark .glass-card {
+            background-color: rgba(15, 29, 36, 0.4) !important;
+            border-color: rgba(56, 123, 141, 0.25) !important;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        html:not(.dark) .glass-card {
+            background-color: rgba(255, 255, 255, 0.55) !important;
+            border-color: rgba(255, 255, 255, 0.7) !important;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.03);
+        }
+
+        /* Card Hero com Transparência Extrema e Destaque Holográfico */
+        .hero-ultra-glass {
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            transition: all 0.4s ease;
+        }
+        html.dark .hero-ultra-glass {
+            background: linear-gradient(135deg, rgba(15, 29, 36, 0.28) 0%, rgba(9, 20, 25, 0.15) 100%) !important;
+            border: 1px solid rgba(114, 190, 207, 0.22) !important;
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4), inset 0 0 20px rgba(114, 190, 207, 0.05);
+        }
+        html:not(.dark) .hero-ultra-glass {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.3) 100%) !important;
+            border: 1px solid rgba(255, 255, 255, 0.8) !important;
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.04), inset 0 0 20px rgba(255, 255, 255, 0.3);
+        }
+
+        .gradient-accent {
+            background: linear-gradient(135deg, #00598a 0%, #387b8d 100%);
+        }
+
+        /* Animações Gráficas */
+        @keyframes drawLine {
+            from { stroke-dashoffset: 1000; }
+            to { stroke-dashoffset: 0; }
+        }
+        .animate-chart-line {
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: drawLine 2.5s ease-out forwards;
+        }
+
+        @keyframes growBar {
+            from { transform: scaleY(0); }
+            to { transform: scaleY(1); }
+        }
+        .animate-bar {
+            transform-origin: bottom;
+            animation: growBar 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes donutSpin {
+            from { stroke-dasharray: 0 314; }
+        }
+        .animate-donut {
+            animation: donutSpin 1.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-[#00598a] selection:text-white">
+
+    <!-- CANVAS THREE.JS 3D PARALAX -->
+    <canvas id="webgl-canvas"></canvas>
+
+    <header id="main-header" class="fixed top-0 left-0 right-0 z-50 px-4 lg:px-8 py-3.5 transition-all duration-300 border-b dark:bg-[#061016]/85 bg-white/80 dark:border-[#1e303a]/60 border-slate-200 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <a href="#hero" onclick="scrollToSection('hero', 'sparkle')" class="font-garamond text-base sm:text-lg font-semibold tracking-wide dark:text-white text-slate-800 hover:opacity-80 transition-opacity flex items-center gap-2">
+                <span class="w-6 h-6 rounded-full bg-[#387b8d] text-white flex items-center justify-center font-bold text-xs">D.</span>
+                <span>Deco Investimentos</span>
+            </a>
+
+            <!-- NAVEGAÇÃO DESKTOP -->
+            <nav class="hidden md:flex items-center gap-7">
+                <button onclick="scrollToSection('hero', 'sparkle')" id="nav-hero" class="nav-link text-xs sm:text-sm font-medium dark:text-slate-300 text-slate-600 dark:hover:text-white hover:text-slate-900 active">
+                    Início
+                </button>
+                <button onclick="scrollToSection('solucoes', 'candlestick')" id="nav-estrategia" class="nav-link text-xs sm:text-sm font-medium dark:text-slate-300 text-slate-600 dark:hover:text-white hover:text-slate-900">
+                    Estratégia
+                </button>
+                <button onclick="scrollToSection('metodologia', 'rubik')" id="nav-metodologia" class="nav-link text-xs sm:text-sm font-medium dark:text-slate-300 text-slate-600 dark:hover:text-white hover:text-slate-900">
+                    Metodologia
+                </button>
+                <button onclick="scrollToSection('performance', 'barchart')" id="nav-rentabilidade" class="nav-link text-xs sm:text-sm font-medium dark:text-slate-300 text-slate-600 dark:hover:text-white hover:text-slate-900">
+                    Rentabilidade
+                </button>
+                <button onclick="scrollToSection('blocos', 'decotext')" id="nav-avaliacao" class="nav-link text-xs sm:text-sm font-medium dark:text-slate-300 text-slate-600 dark:hover:text-white hover:text-slate-900">
+                    Avaliação de Perfil
+                </button>
+                <a href="#contato" onclick="scrollToSection('contato', 'sparkle')" class="nav-link text-xs sm:text-sm font-medium dark:text-slate-300 text-slate-600 dark:hover:text-white hover:text-slate-900">
+                    Contato
+                </a>
+            </nav>
+
+            <!-- AÇÕES, TEMA E LOGIN -->
+            <div class="flex items-center gap-3">
+                <button id="theme-toggle" class="p-2 rounded-full dark:bg-[#0f1d24] bg-slate-100 dark:text-amber-400 text-slate-600 border dark:border-[#1e303a] border-slate-200 hover:scale-105 transition-transform" aria-label="Alternar Tema">
+                    <i data-lucide="sun" class="w-4 h-4 hidden dark:block"></i>
+                    <i data-lucide="moon" class="w-4 h-4 block dark:hidden"></i>
+                </button>
+
+                <button id="login-btn" class="dark:bg-[#0f1d24] bg-slate-100 hover:opacity-80 text-slate-700 dark:text-slate-200 text-xs font-semibold px-4 py-2 rounded-full dark:border-[#1e303a] border border-slate-200 transition-all duration-300 shadow-sm">
+                    Login
+                </button>
+                
+                <button id="mobile-menu-btn" class="md:hidden p-2 rounded-lg dark:hover:bg-white/10 hover:bg-slate-200/60 transition-colors" aria-label="Abrir Menu">
+                    <i data-lucide="menu" class="w-5 h-5 dark:text-white text-slate-700"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Menu Mobile Dropdown -->
+        <div id="mobile-menu" class="hidden md:hidden mt-3 pt-3 border-t dark:border-[#1e303a] border-slate-200 flex flex-col gap-2.5 pb-2">
+            <button onclick="scrollToSection('hero', 'sparkle')" class="text-left text-xs font-medium dark:text-slate-200 text-slate-700 hover:text-[#387b8d]">Início</button>
+            <button onclick="scrollToSection('solucoes', 'candlestick')" class="text-left text-xs font-medium dark:text-slate-200 text-slate-700 hover:text-[#387b8d]">Estratégia</button>
+            <button onclick="scrollToSection('metodologia', 'rubik')" class="text-left text-xs font-medium dark:text-slate-200 text-slate-700 hover:text-[#387b8d]">Metodologia</button>
+            <button onclick="scrollToSection('performance', 'barchart')" class="text-left text-xs font-medium dark:text-slate-200 text-slate-700 hover:text-[#387b8d]">Rentabilidade</button>
+            <button onclick="scrollToSection('blocos', 'decotext')" class="text-left text-xs font-medium dark:text-slate-200 text-slate-700 hover:text-[#387b8d]">Avaliação de Perfil</button>
+            <a href="#contato" onclick="scrollToSection('contato', 'sparkle')" class="text-left text-xs font-medium dark:text-slate-200 text-slate-700 hover:text-[#387b8d]">Contato</a>
+        </div>
+    </header>
+
+    <section id="hero" class="relative min-h-screen flex items-center pt-28 pb-16 px-4 sm:px-6 lg:px-12 z-10">
+        <div class="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            
+            <!-- CARD HERO COM TRANSPARÊNCIA ULTRA -->
+            <div class="lg:col-span-7 text-left hero-ultra-glass p-6 sm:p-10 rounded-3xl">
+                
+                <span class="text-xs font-bold uppercase tracking-widest text-[#00598a] dark:text-[#72becf] block mb-2">
+                    Consultoria Financeira
+                </span>
+                <h1 class="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight dark:text-white text-slate-800 leading-tight mb-3 flex items-baseline gap-1.5 flex-wrap">
+                    <span>Justa. Honesta.</span> 
+                    <span class="font-garamond italic font-normal text-2xl sm:text-3xl md:text-4xl text-[#00598a] dark:text-[#72becf]">Transparente.</span>
+                </h1>
+
+                <p class="text-xs sm:text-sm dark:text-slate-300 text-slate-600 font-medium leading-relaxed mb-5">
+                    Consultoria humana, olho no olho, nada de robôs ou IA.<br>
+                    Sem taxa escondida. Sem comissão de corretora.<br>
+                    <strong>Sem conflito de interesse</strong>.
+                </p>
+
+                <ul class="flex flex-col gap-2.5 mb-6 text-xs sm:text-sm font-medium dark:text-slate-300 text-slate-600">
+                    <li class="flex items-center gap-2">
+                        <i data-lucide="check-circle-2" class="w-4 h-4 text-[#387b8d] dark:text-[#72becf] shrink-0"></i>
+                        <span>Investidor Profissional</span>
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <i data-lucide="check-circle-2" class="w-4 h-4 text-[#387b8d] dark:text-[#72becf] shrink-0"></i>
+                        <span>CNPI Fundamentalista 10318</span>
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <i data-lucide="check-circle-2" class="w-4 h-4 text-[#387b8d] dark:text-[#72becf] shrink-0"></i>
+                        <span>Consultor CVM 004670-1</span>
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <i data-lucide="check-circle-2" class="w-4 h-4 text-[#387b8d] dark:text-[#72becf] shrink-0"></i>
+                        <span>Estatística Bayesiana aplicada</span>
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <i data-lucide="check-circle-2" class="w-4 h-4 text-[#387b8d] dark:text-[#72becf] shrink-0"></i>
+                        <span>10+ anos de experiência em Estratégia Empresarial</span>
+                    </li>
+                </ul>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
+                    <div class="p-4 rounded-2xl hero-ultra-glass border border-[#387b8d]/20 relative overflow-hidden">
+                        <div class="text-2xl sm:text-3xl font-extrabold text-[#387b8d] dark:text-[#72becf] tracking-tight">
+                            354% <span class="text-xs font-semibold dark:text-slate-300 text-slate-600">do CDI</span>
+                        </div>
+                        <div class="text-[11px] dark:text-slate-400 text-slate-600 font-medium mt-1">
+                            Média nos últimos 8 anos da carteira pessoal do Deco.
+                        </div>
+                    </div>
+
+                    <div class="p-4 rounded-2xl hero-ultra-glass border border-[#00598a]/20 relative">
+                        <div class="text-2xl sm:text-3xl font-extrabold text-[#00598a] dark:text-[#72becf] tracking-tight">
+                            0% <span class="text-xs font-semibold dark:text-slate-300 text-slate-600">Taxa Fixa</span>
+                        </div>
+                        <div class="text-[11px] dark:text-slate-400 text-slate-600 font-medium mt-1">
+                            Apenas de performance sobre o excedente do CDI Líq. de IR.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-3 mb-4">
+                    <a href="#contato" onclick="scrollToSection('contato', 'sparkle')" class="px-5 py-2.5 rounded-full bg-gradient-to-r from-[#00598a] to-[#387b8d] text-white font-semibold text-xs hover:brightness-110 shadow-md transition-all">
+                        Marcar uma conversa
+                    </a>
+                    <a href="#solucoes" onclick="scrollToSection('solucoes', 'candlestick')" class="px-5 py-2.5 rounded-full hero-ultra-glass hover:bg-white/40 dark:hover:bg-white/10 dark:text-white text-slate-700 font-semibold text-xs border transition-all flex items-center gap-1.5">
+                        <span>Conhecer Estratégias</span>
+                        <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                    </a>
+                </div>
+
+                <p class="text-[10px] dark:text-slate-400 text-slate-600 italic leading-normal border-t dark:border-slate-800/40 border-slate-200/40 pt-3">
+                    *Carteira pessoal do Deco. Rentabilidade passada não garante retornos futuros.
+                </p>
+            </div>
+
+            <div class="hidden lg:block lg:col-span-4 pointer-events-none"></div>
+        </div>
+    </section>
+
+    <main class="relative z-10">
+
+        <!-- SEÇÃO: ESTRATÉGIA -->
+        <section id="solucoes" class="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                
+                <div class="lg:col-span-5 text-left">
+                    <span class="text-xs font-bold uppercase tracking-widest text-[#00598a] dark:text-[#72becf] block mb-3 font-mono">
+                        01 / NOSSA ESTRATÉGIA
+                    </span>
+                    <h2 class="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight dark:text-white text-slate-800 leading-tight mb-2">
+                        Patrimônio não se monta.
+                    </h2>
+                    <p class="font-garamond italic font-normal text-3xl sm:text-4xl text-[#00598a] dark:text-[#72becf] mb-6">
+                        Se constrói.
+                    </p>
+                    <p class="text-xs sm:text-sm dark:text-slate-300 text-slate-600 leading-relaxed mb-8">
+                        Uma estratégia de alocação pensada para atravessar ciclos. Proteção primeiro, crescimento depois — sempre respeitando o momento de vida e os objetivos de cada cliente.
+                    </p>
+                    <div class="flex flex-wrap items-center gap-3">
+                        <span class="glass-card px-4 py-2 rounded-full border text-xs font-medium dark:text-slate-200 text-slate-700">
+                            Renda fixa customizada
+                        </span>
+                        <span class="glass-card px-4 py-2 rounded-full border text-xs font-medium dark:text-slate-200 text-slate-700">
+                            Value investing
+                        </span>
+                        <span class="glass-card px-4 py-2 rounded-full border text-xs font-medium dark:text-slate-200 text-slate-700">
+                            Proteção patrimonial
+                        </span>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-7">
+                    <div class="hero-ultra-glass border rounded-3xl p-6 sm:p-8 relative">
+                        <div class="flex items-center justify-between mb-6">
+                            <span class="text-[11px] font-mono tracking-wider text-slate-400 uppercase">
+                                ARQUITETURA DE CARTEIRA
+                            </span>
+                            <span class="text-[11px] font-mono tracking-wider text-[#72becf]">
+                                DECO / STRATEGY
+                            </span>
+                        </div>
+
+                        <h3 class="text-lg sm:text-xl font-bold dark:text-white text-slate-800 mb-8">
+                            Sólida na base. Assimétrica no longo prazo.
+                        </h3>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                            <div class="glass-card border rounded-2xl p-5 hover:border-[#387b8d] transition-all duration-300">
+                                <span class="text-[10px] font-mono font-bold uppercase tracking-widest text-[#387b8d] dark:text-[#72becf] block mb-2">
+                                    BASE
+                                </span>
+                                <h4 class="text-base font-bold dark:text-white text-slate-800 mb-2">
+                                    Reserva
+                                </h4>
+                                <p class="text-[11px] dark:text-slate-300 text-slate-600 leading-relaxed">
+                                    Emergência e oportunidade em renda fixa soberana.
+                                </p>
+                            </div>
+
+                            <div class="glass-card border rounded-2xl p-5 hover:border-[#387b8d] transition-all duration-300">
+                                <span class="text-[10px] font-mono font-bold uppercase tracking-widest text-[#387b8d] dark:text-[#72becf] block mb-2">
+                                    EXCEDENTE
+                                </span>
+                                <h4 class="text-base font-bold dark:text-white text-slate-800 mb-2">
+                                    Ações
+                                </h4>
+                                <p class="text-[11px] dark:text-slate-300 text-slate-600 leading-relaxed">
+                                    Longuíssimo prazo, empresas maduras e pagadoras de dividendos.
+                                </p>
+                            </div>
+
+                            <div class="glass-card border rounded-2xl p-5 hover:border-[#387b8d] transition-all duration-300">
+                                <span class="text-[10px] font-mono font-bold uppercase tracking-widest text-[#387b8d] dark:text-[#72becf] block mb-2">
+                                    PRINCÍPIO
+                                </span>
+                                <h4 class="text-base font-bold dark:text-white text-slate-800 mb-2">
+                                    Sem meio-termo
+                                </h4>
+                                <p class="text-[11px] dark:text-slate-300 text-slate-600 leading-relaxed">
+                                    Sem risco intermediário: a assimetria não compensa o retorno.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="pt-4 border-t dark:border-slate-800/60 border-slate-200/60 flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-slate-400 font-medium">
+                            <span>Sem teses e promessas de crescimento.</span>
+                            <span class="text-[#72becf] font-semibold flex items-center gap-1">
+                                &rarr; Maturidade, dividendos e horizonte longo
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- SEÇÃO: METODOLOGIA -->
+        <section id="metodologia" class="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+            <div class="text-left mb-10">
+                <span class="text-xs font-bold uppercase tracking-widest text-[#00598a] dark:text-[#72becf] block mb-3 font-mono">
+                    02 / METODOLOGIA DECO
+                </span>
+                <h2 class="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight dark:text-white text-slate-800 leading-tight mb-2">
+                    Um processo simples.
+                </h2>
+                <p class="font-garamond italic font-normal text-3xl sm:text-4xl text-[#00598a] dark:text-[#72becf]">
+                    Uma disciplina constante.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                <div class="hero-ultra-glass border rounded-3xl p-6 sm:p-8 relative flex flex-col justify-between hover:border-[#387b8d] transition-all duration-300">
+                    <div>
+                        <div class="font-garamond italic font-normal text-3xl sm:text-4xl text-[#387b8d] dark:text-[#72becf] mb-4">
+                            01
+                        </div>
+                        <h3 class="text-xl font-bold dark:text-white text-slate-800 mb-3">
+                            Estudar
+                        </h3>
+                        <p class="text-xs sm:text-sm dark:text-slate-300 text-slate-600 leading-relaxed">
+                            Estudamos empresas em detalhe e monitoramos o mercado todos os dias para encontrar oportunidades.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="hero-ultra-glass border rounded-3xl p-6 sm:p-8 relative flex flex-col justify-between hover:border-[#387b8d] transition-all duration-300">
+                    <div>
+                        <div class="font-garamond italic font-normal text-3xl sm:text-4xl text-[#387b8d] dark:text-[#72becf] mb-4">
+                            02
+                        </div>
+                        <h3 class="text-xl font-bold dark:text-white text-slate-800 mb-3">
+                            Recomendar
+                        </h3>
+                        <p class="text-xs sm:text-sm dark:text-slate-300 text-slate-600 leading-relaxed">
+                            Cada recomendação vem com motivo, preço-alvo, zona de compra e de venda, para você decidir.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="hero-ultra-glass border rounded-3xl p-6 sm:p-8 relative flex flex-col justify-between hover:border-[#387b8d] transition-all duration-300">
+                    <div>
+                        <div class="font-garamond italic font-normal text-3xl sm:text-4xl text-[#387b8d] dark:text-[#72becf] mb-4">
+                            03
+                        </div>
+                        <h3 class="text-xl font-bold dark:text-white text-slate-800 mb-3">
+                            Executar
+                        </h3>
+                        <p class="text-xs sm:text-sm dark:text-slate-300 text-slate-600 leading-relaxed">
+                            Você trabalha e investe parte da renda; nós estudamos. O dinheiro permanece sempre na sua corretora.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hero-ultra-glass border rounded-3xl p-6 sm:p-8 relative flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div>
+                    <span class="text-[10px] font-mono font-bold uppercase tracking-widest text-[#387b8d] dark:text-[#72becf] block mb-1">
+                        PRINCÍPIO CENTRAL
+                    </span>
+                    <h4 class="text-sm sm:text-base font-bold dark:text-white text-slate-800">
+                        Você decide. Nós estudamos. Seu dinheiro nunca passa pelas nossas mãos.
+                    </h4>
+                </div>
+                <div class="text-[#387b8d] dark:text-[#72becf] text-2xl font-mono shrink-0">
+                    &infin;
+                </div>
+            </div>
+        </section>
+
+        <!-- SEÇÃO: RENTABILIDADE (FIEL AO PRINT DETALHADO) -->
+        <section id="performance" class="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+            <!-- Cabeçalho da Seção -->
+            <div class="text-left mb-12">
+                <span class="text-xs font-bold uppercase tracking-widest text-[#00598a] dark:text-[#72becf] block mb-3 font-mono">
+                    RENTABILIDADE
+                </span>
+                <h2 class="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight dark:text-white text-slate-800 leading-tight mb-2">
+                    Transparente.
+                </h2>
+                <p class="font-garamond italic font-normal text-3xl sm:text-4xl text-[#00598a] dark:text-[#72becf] mb-6">
+                    Comprovada.
+                </p>
+                <p class="text-xs sm:text-sm dark:text-slate-300 text-slate-600 max-w-2xl leading-relaxed">
+                    Acompanhamento completo da carteira de referência, com dados consolidados, proventos e performance histórica. Tudo claro, tudo disponível.
+                </p>
+            </div>
+
+            <!-- Banner Destaque Superior da Carteira de Referência -->
+            <div class="glass-card border rounded-3xl p-6 sm:p-8 mb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                <div class="flex items-start gap-4">
+                    <div class="w-12 h-12 rounded-2xl bg-[#387b8d]/20 text-[#72becf] flex items-center justify-center shrink-0 border border-[#387b8d]/30">
+                        <i data-lucide="trending-up" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <p class="text-xs sm:text-sm dark:text-slate-200 text-slate-700 leading-relaxed font-medium">
+                            Veja nossa carteira de referência. Você terá a mesma visão de seus investimentos, independente do banco, da corretora, sem custo. Tudo integrado e <strong class="text-[#72becf]">em um só lugar</strong>.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Grid de Gráficos Superiores: Posição Atual (Rosca) e Proventos Semestrais (Colunas) -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                
+                <!-- CARD 1: Posição Atual (Gráfico de Rosca) -->
+                <div class="glass-card border rounded-3xl p-6 sm:p-8 flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-lg font-bold dark:text-white text-slate-800 mb-1">Posição Atual</h3>
+                        <p class="text-[11px] dark:text-slate-400 text-slate-500 mb-6">Alocação por ativo com base na posição atual da carteira • Total R$ 3.372.769,67</p>
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row items-center justify-center gap-6 my-4">
+                        <!-- SVG Gráfico de Rosca Animado -->
+                        <div class="relative w-48 h-48 flex items-center justify-center">
+                            <svg class="w-full h-full transform -rotate-90" viewBox="0 0 120 120">
+                                <!-- Base Ring -->
+                                <circle cx="60" cy="60" r="45" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="14"></circle>
+                                <!-- JHSF3 (30,6%) -->
+                                <circle cx="60" cy="60" r="45" fill="none" stroke="#f97316" stroke-width="14" stroke-dasharray="282.7" stroke-dashoffset="0" class="animate-donut"></circle>
+                                <!-- BBAS3 (23,7%) -->
+                                <circle cx="60" cy="60" r="45" fill="none" stroke="#06b6d4" stroke-width="14" stroke-dasharray="282.7" stroke-dashoffset="196" class="animate-donut" style="animation-delay: 0.2s;"></circle>
+                                <!-- BBSE3 (9,6%) -->
+                                <circle cx="60" cy="60" r="45" fill="none" stroke="#3b82f6" stroke-width="14" stroke-dasharray="282.7" stroke-dashoffset="230" class="animate-donut" style="animation-delay: 0.4s;"></circle>
+                                <!-- LEVE3 (6,7%) -->
+                                <circle cx="60" cy="60" r="45" fill="none" stroke="#eab308" stroke-width="14" stroke-dasharray="282.7" stroke-dashoffset="250" class="animate-donut" style="animation-delay: 0.6s;"></circle>
+                                <!-- CXSE3 (5,6%) -->
+                                <circle cx="60" cy="60" r="45" fill="none" stroke="#ec4899" stroke-width="14" stroke-dasharray="282.7" stroke-dashoffset="262" class="animate-donut" style="animation-delay: 0.8s;"></circle>
+                                <!-- Outros e demais -->
+                                <circle cx="60" cy="60" r="45" fill="none" stroke="#8b5cf6" stroke-width="14" stroke-dasharray="282.7" stroke-dashoffset="270" class="animate-donut" style="animation-delay: 1.0s;"></circle>
+                            </svg>
+                            <div class="absolute text-center">
+                                <span class="text-xs font-bold dark:text-white text-slate-800 block">Ativos</span>
+                                <span class="text-[10px] text-[#72becf] font-mono">100% Diversificado</span>
+                            </div>
+                        </div>
+
+                        <!-- Legenda dos Ativos -->
+                        <div class="grid grid-cols-2 gap-x-4 gap-y-2 text-[11px] font-medium">
+                            <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-orange-500"></span><span class="dark:text-slate-300 text-slate-700">JHSF3 (30,6%)</span></div>
+                            <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-cyan-500"></span><span class="dark:text-slate-300 text-slate-700">BBAS3 (23,7%)</span></div>
+                            <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span><span class="dark:text-slate-300 text-slate-700">BBSE3 (9,6%)</span></div>
+                            <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-yellow-500"></span><span class="dark:text-slate-300 text-slate-700">LEVE3 (6,7%)</span></div>
+                            <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-pink-500"></span><span class="dark:text-slate-300 text-slate-700">CXSE3 (5,6%)</span></div>
+                            <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-teal-400"></span><span class="dark:text-slate-300 text-slate-700">PINE4 (5,4%)</span></div>
+                            <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-indigo-400"></span><span class="dark:text-slate-300 text-slate-700">CMIG4 (5,3%)</span></div>
+                            <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-purple-400"></span><span class="dark:text-slate-300 text-slate-700">ITSA4 (4,7%)</span></div>
+                            <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span><span class="dark:text-slate-300 text-slate-700">AZZA3 (4,3%)</span></div>
+                            <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-slate-400"></span><span class="dark:text-slate-300 text-slate-700">Outros (4,0%)</span></div>
+                        </div>
+                    </div>
+                    <div class="text-[10px] text-slate-400 mt-4 pt-3 border-t dark:border-slate-800/50">*Posição dinâmica atualizada em tempo real com base na custódia do cliente.</div>
+                </div>
+
+                <!-- CARD 2: Proventos Semestrais (Gráfico de Barras Animado) -->
+                <div class="glass-card border rounded-3xl p-6 sm:p-8 flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-lg font-bold dark:text-white text-slate-800 mb-1">Proventos Semestrais</h3>
+                        <p class="text-[11px] dark:text-slate-400 text-slate-500 mb-6">Dividendos recebidos agregados por semestre</p>
+                    </div>
+
+                    <!-- Visualizador de Barras Semestrais -->
+                    <div class="h-48 flex items-end justify-between gap-1.5 pt-6 pb-2 px-2 border-b dark:border-slate-800/80 border-slate-200 relative">
+                        <!-- Linhas de Grade de Fundo -->
+                        <div class="absolute inset-x-0 top-0 border-t border-dashed dark:border-slate-800/60 border-slate-200 text-[9px] text-slate-400 pt-0.5">R$ 120k</div>
+                        <div class="absolute inset-x-0 top-1/4 border-t border-dashed dark:border-slate-800/60 border-slate-200 text-[9px] text-slate-400 pt-0.5">R$ 90k</div>
+                        <div class="absolute inset-x-0 top-2/4 border-t border-dashed dark:border-slate-800/60 border-slate-200 text-[9px] text-slate-400 pt-0.5">R$ 60k</div>
+                        <div class="absolute inset-x-0 top-3/4 border-t border-dashed dark:border-slate-800/60 border-slate-200 text-[9px] text-slate-400 pt-0.5">R$ 30k</div>
+
+                        <!-- Colunas (18S1 até 26S2 - Semestre corrente e futuros em cinza) -->
+                        <div class="flex-1 flex flex-col items-center gap-1 z-10">
+                            <span class="text-[9px] text-[#72becf] font-mono">R$ 35</span>
+                            <div class="w-full bg-[#387b8d]/60 rounded-t animate-bar" style="height: 10px; animation-delay: 0.1s;"></div>
+                            <span class="text-[9px] text-slate-400">18S1</span>
+                        </div>
+                        <div class="flex-1 flex flex-col items-center gap-1 z-10">
+                            <span class="text-[9px] text-[#72becf] font-mono">R$ 792</span>
+                            <div class="w-full bg-[#387b8d]/60 rounded-t animate-bar" style="height: 14px; animation-delay: 0.15s;"></div>
+                            <span class="text-[9px] text-slate-400">18S2</span>
+                        </div>
+                        <div class="flex-1 flex flex-col items-center gap-1 z-10">
+                            <span class="text-[9px] text-[#72becf] font-mono">R$ 416</span>
+                            <div class="w-full bg-[#387b8d]/60 rounded-t animate-bar" style="height: 12px; animation-delay: 0.2s;"></div>
+                            <span class="text-[9px] text-slate-400">19S1</span>
+                        </div>
+                        <div class="flex-1 flex flex-col items-center gap-1 z-10">
+                            <span class="text-[9px] text-[#72becf] font-mono">R$ 1k</span>
+                            <div class="w-full bg-[#387b8d]/60 rounded-t animate-bar" style="height: 16px; animation-delay: 0.25s;"></div>
+                            <span class="text-[9px] text-slate-400">19S2</span>
+                        </div>
+                        <div class="flex-1 flex flex-col items-center gap-1 z-10">
+                            <span class="text-[9px] text-[#72becf] font-mono">R$ 6k</span>
+                            <div class="w-full bg-[#387b8d]/60 rounded-t animate-bar" style="height: 22px; animation-delay: 0.3s;"></div>
+                            <span class="text-[9px] text-slate-400">20S1</span>
+                        </div>
+                        <div class="flex-1 flex flex-col items-center gap-1 z-10">
+                            <span class="text-[9px] text-[#72becf] font-mono">R$ 7k</span>
+                            <div class="w-full bg-[#387b8d]/60 rounded-t animate-bar" style="height: 25px; animation-delay: 0.35s;"></div>
+                            <span class="text-[9px] text-slate-400">21S1</span>
+                        </div>
+                        <div class="flex-1 flex flex-col items-center gap-1 z-10">
+                            <span class="text-[9px] text-[#72becf] font-mono">R$ 14k</span>
+                            <div class="w-full bg-[#387b8d]/60 rounded-t animate-bar" style="height: 35px; animation-delay: 0.4s;"></div>
+                            <span class="text-[9px] text-slate-400">21S2</span>
+                        </div>
+                        <div class="flex-1 flex flex-col items-center gap-1 z-10">
+                            <span class="text-[9px] text-[#72becf] font-mono">R$ 39k</span>
+                            <div class="w-full bg-[#387b8d] rounded-t animate-bar" style="height: 60px; animation-delay: 0.45s;"></div>
+                            <span class="text-[9px] text-slate-400">22S1</span>
+                        </div>
+                        <div class="flex-1 flex flex-col items-center gap-1 z-10">
+                            <span class="text-[9px] text-[#72becf] font-mono">R$ 44k</span>
+                            <div class="w-full bg-[#387b8d] rounded-t animate-bar" style="height: 68px; animation-delay: 0.5s;"></div>
+                            <span class="text-[9px] text-slate-400">23S2</span>
+                        </div>
+                        <div class="flex-1 flex flex-col items-center gap-1 z-10">
+                            <span class="text-[9px] text-[#72becf] font-mono">R$ 51k</span>
+                            <div class="w-full bg-[#387b8d] rounded-t animate-bar" style="height: 76px; animation-delay: 0.55s;"></div>
+                            <span class="text-[9px] text-slate-400">23S2</span>
+                        </div>
+                        <div class="flex-1 flex flex-col items-center gap-1 z-10">
+                            <span class="text-[9px] text-[#72becf] font-mono">R$ 68k</span>
+                            <div class="w-full bg-[#00598a] rounded-t animate-bar" style="height: 95px; animation-delay: 0.6s;"></div>
+                            <span class="text-[9px] text-slate-400">24S2</span>
+                        </div>
+                        <div class="flex-1 flex flex-col items-center gap-1 z-10">
+                            <span class="text-[9px] text-[#72becf] font-mono">R$ 81k</span>
+                            <div class="w-full bg-[#00598a] rounded-t animate-bar" style="height: 110px; animation-delay: 0.65s;"></div>
+                            <span class="text-[9px] text-slate-400">25S2</span>
+                        </div>
+                        <div class="flex-1 flex flex-col items-center gap-1 z-10">
+                            <span class="text-[9px] text-[#72becf] font-mono">R$ 78k</span>
+                            <div class="w-full bg-[#00598a] rounded-t animate-bar" style="height: 105px; animation-delay: 0.7s;"></div>
+                            <span class="text-[9px] text-slate-400">25S2</span>
+                        </div>
+                        <div class="flex-1 flex flex-col items-center gap-1 z-10">
+                            <span class="text-[9px] text-slate-400 font-bold font-mono">R$ 120k</span>
+                            <div class="w-full bg-slate-500 rounded-t animate-bar shadow-lg" style="height: 155px; animation-delay: 0.75s;"></div>
+                            <span class="text-[9px] text-white font-bold">26S1</span>
+                        </div>
+                        <div class="flex-1 flex flex-col items-center gap-1 z-10">
+                            <span class="text-[9px] text-slate-400 font-mono">R$ 57k</span>
+                            <div class="w-full bg-slate-600/80 rounded-t animate-bar" style="height: 80px; animation-delay: 0.8s;"></div>
+                            <span class="text-[9px] text-slate-400">26S2</span>
+                        </div>
+                    </div>
+                    <div class="text-[10px] text-slate-400 mt-4">Crescimento constante do fluxo de caixa e proventos distribuídos semestralmente.</div>
+                </div>
+
+            </div>
+
+            <!-- CARD CENTRAL: Estimativa de Dividendos Futuros -->
+            <div class="glass-card border rounded-3xl p-6 sm:p-8 mb-8">
+                <h3 class="text-lg font-bold dark:text-white text-slate-800 mb-1">Estimativa de Dividendos Futuros</h3>
+                <p class="text-[11px] dark:text-slate-400 text-slate-500 mb-6">Dividendos recebidos nos últimos 12 meses e estimativas para os próximos 12 meses (meses correntes e futuros em cinza)</p>
+
+                <!-- Gráfico de Barras Mensais (Passado em azul, corrente e futuros em cinza) -->
+                <div class="h-44 flex items-end justify-between gap-1 pt-6 pb-2 px-1 relative border-b dark:border-slate-800/80 border-slate-200 overflow-x-auto">
+                    <!-- Passado (Ago/25 a Fev/26 - azul) -->
+                    <div class="flex flex-col items-center gap-1 min-w-[24px]">
+                        <span class="text-[8px] text-[#72becf]">R$ 25k</span>
+                        <div class="w-4 bg-[#387b8d] rounded-t animate-bar" style="height: 55px;"></div>
+                        <span class="text-[8px] text-slate-400">Ago/25</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-1 min-w-[24px]">
+                        <span class="text-[8px] text-[#72becf]">R$ 4k</span>
+                        <div class="w-4 bg-[#387b8d]/60 rounded-t animate-bar" style="height: 15px;"></div>
+                        <span class="text-[8px] text-slate-400">Set/25</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-1 min-w-[24px]">
+                        <span class="text-[8px] text-[#72becf]">R$ 6k</span>
+                        <div class="w-4 bg-[#387b8d]/60 rounded-t animate-bar" style="height: 20px;"></div>
+                        <span class="text-[8px] text-slate-400">Out/25</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-1 min-w-[24px]">
+                        <span class="text-[8px] text-[#72becf]">R$ 11k</span>
+                        <div class="w-4 bg-[#387b8d]/60 rounded-t animate-bar" style="height: 30px;"></div>
+                        <span class="text-[8px] text-slate-400">Nov/25</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-1 min-w-[24px]">
+                        <span class="text-[8px] text-[#72becf]">R$ 27k</span>
+                        <div class="w-4 bg-[#387b8d] rounded-t animate-bar" style="height: 60px;"></div>
+                        <span class="text-[8px] text-slate-400">Dez/25</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-1 min-w-[24px]">
+                        <span class="text-[8px] text-[#72becf]">R$ 14k</span>
+                        <div class="w-4 bg-[#387b8d]/60 rounded-t animate-bar" style="height: 38px;"></div>
+                        <span class="text-[8px] text-slate-400">Jan/26</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-1 min-w-[24px]">
+                        <span class="text-[8px] text-[#72becf]">R$ 8k</span>
+                        <div class="w-4 bg-[#387b8d]/60 rounded-t animate-bar" style="height: 25px;"></div>
+                        <span class="text-[8px] text-slate-400">Fev/26</span>
+                    </div>
+                    <!-- Corrente e Futuros (Mar/26 em diante - Cinza) -->
+                    <div class="flex flex-col items-center gap-1 min-w-[24px]">
+                        <span class="text-[8px] text-slate-400 font-bold">R$ 44k</span>
+                        <div class="w-4 bg-slate-500 rounded-t animate-bar" style="height: 95px;"></div>
+                        <span class="text-[8px] text-slate-400">Mar/26</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-1 min-w-[24px]">
+                        <span class="text-[8px] text-slate-400">R$ 12k</span>
+                        <div class="w-4 bg-slate-600/70 rounded-t animate-bar" style="height: 32px;"></div>
+                        <span class="text-[8px] text-slate-400">Abr/26</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-1 min-w-[24px]">
+                        <span class="text-[8px] text-slate-400">R$ 21k</span>
+                        <div class="w-4 bg-slate-600 rounded-t animate-bar" style="height: 48px;"></div>
+                        <span class="text-[8px] text-slate-400">Mai/26</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-1 min-w-[24px]">
+                        <span class="text-[8px] text-slate-400">R$ 21k</span>
+                        <div class="w-4 bg-slate-600 rounded-t animate-bar" style="height: 48px;"></div>
+                        <span class="text-[8px] text-slate-400">Jun/26</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-1 min-w-[24px]">
+                        <span class="text-[8px] text-slate-400">R$ 13k</span>
+                        <div class="w-4 bg-slate-600/70 rounded-t animate-bar" style="height: 35px;"></div>
+                        <span class="text-[8px] text-slate-400">Jul/26</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-1 min-w-[24px]">
+                        <span class="text-[8px] text-slate-300 font-bold">R$ 31k</span>
+                        <div class="w-4 bg-slate-500 rounded-t animate-bar" style="height: 70px;"></div>
+                        <span class="text-[8px] text-white font-bold">Ago/26</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-1 min-w-[24px]">
+                        <span class="text-[8px] text-slate-400">R$ 18k</span>
+                        <div class="w-4 bg-slate-600/70 rounded-t animate-bar" style="height: 42px;"></div>
+                        <span class="text-[8px] text-slate-400">Set/26</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-1 min-w-[24px]">
+                        <span class="text-[8px] text-slate-400">R$ 11k</span>
+                        <div class="w-4 bg-slate-600/70 rounded-t animate-bar" style="height: 30px;"></div>
+                        <span class="text-[8px] text-slate-400">Out/26</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-1 min-w-[24px]">
+                        <span class="text-[8px] text-slate-400">R$ 12k</span>
+                        <div class="w-4 bg-slate-600/70 rounded-t animate-bar" style="height: 33px;"></div>
+                        <span class="text-[8px] text-slate-400">Nov/26</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-1 min-w-[24px]">
+                        <span class="text-[8px] text-slate-400">R$ 24k</span>
+                        <div class="w-4 bg-slate-600 rounded-t animate-bar" style="height: 54px;"></div>
+                        <span class="text-[8px] text-slate-400">Dez/26</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-1 min-w-[24px]">
+                        <span class="text-[8px] text-slate-400">R$ 15k</span>
+                        <div class="w-4 bg-slate-600/70 rounded-t animate-bar" style="height: 38px;"></div>
+                        <span class="text-[8px] text-slate-400">Jan/27</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-1 min-w-[24px]">
+                        <span class="text-[8px] text-slate-400 font-bold">R$ 34k</span>
+                        <div class="w-4 bg-slate-500 rounded-t animate-bar" style="height: 76px;"></div>
+                        <span class="text-[8px] text-slate-400">Fev/27</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-1 min-w-[24px]">
+                        <span class="text-[8px] text-slate-400">R$ 18k</span>
+                        <div class="w-4 bg-slate-600/70 rounded-t animate-bar" style="height: 42px;"></div>
+                        <span class="text-[8px] text-slate-400">Mar/27</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-1 min-w-[24px]">
+                        <span class="text-[8px] text-slate-400">R$ 16k</span>
+                        <div class="w-4 bg-slate-600/70 rounded-t animate-bar" style="height: 38px;"></div>
+                        <span class="text-[8px] text-slate-400">Abr/27</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-1 min-w-[24px]">
+                        <span class="text-[8px] text-slate-400">R$ 9k</span>
+                        <div class="w-4 bg-slate-600/70 rounded-t animate-bar" style="height: 24px;"></div>
+                        <span class="text-[8px] text-slate-400">Mai/27</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-1 min-w-[24px]">
+                        <span class="text-[8px] text-slate-400">R$ 24k</span>
+                        <div class="w-4 bg-slate-600 rounded-t animate-bar" style="height: 54px;"></div>
+                        <span class="text-[8px] text-slate-400">Jun/27</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-1 min-w-[24px]">
+                        <span class="text-[8px] text-slate-400">R$ 11k</span>
+                        <div class="w-4 bg-slate-600/70 rounded-t animate-bar" style="height: 30px;"></div>
+                        <span class="text-[8px] text-slate-400">Jul/27</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Grid de 6 Cards de Métricas Chave (2 linhas: Título com ícone na mesma linha, e valor sem centavos) -->
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
+                <div class="glass-card border rounded-2xl p-4 flex flex-col justify-between">
+                    <div class="flex items-center gap-2 text-[10px] text-slate-400 uppercase tracking-wider">
+                        <i data-lucide="target" class="w-3.5 h-3.5 text-[#72becf] shrink-0"></i>
+                        <span class="truncate">PATRIMÔNIO</span>
+                    </div>
+                    <div class="text-sm sm:text-base font-extrabold text-[#72becf] mt-2">R$ 3.372.770</div>
+                </div>
+                <div class="glass-card border rounded-2xl p-4 flex flex-col justify-between">
+                    <div class="flex items-center gap-2 text-[10px] text-slate-400 uppercase tracking-wider">
+                        <i data-lucide="layers" class="w-3.5 h-3.5 text-[#72becf] shrink-0"></i>
+                        <span class="truncate">INVESTIDO</span>
+                    </div>
+                    <div class="text-sm sm:text-base font-extrabold text-[#72becf] mt-2">R$ 2.636.721</div>
+                </div>
+                <div class="glass-card border rounded-2xl p-4 flex flex-col justify-between">
+                    <div class="flex items-center gap-2 text-[10px] text-slate-400 uppercase tracking-wider">
+                        <i data-lucide="trending-up" class="w-3.5 h-3.5 text-[#72becf] shrink-0"></i>
+                        <span class="truncate">RESULTADO</span>
+                    </div>
+                    <div class="text-sm sm:text-base font-extrabold text-[#72becf] mt-2">R$ 1.622.781</div>
+                </div>
+                <div class="glass-card border rounded-2xl p-4 flex flex-col justify-between">
+                    <div class="flex items-center gap-2 text-[10px] text-slate-400 uppercase tracking-wider">
+                        <i data-lucide="award" class="w-3.5 h-3.5 text-[#72becf] shrink-0"></i>
+                        <span class="truncate">TWR TOTAL</span>
+                    </div>
+                    <div class="text-sm sm:text-base font-extrabold text-[#72becf] mt-2">330,49%</div>
+                </div>
+                <div class="glass-card border rounded-2xl p-4 flex flex-col justify-between">
+                    <div class="flex items-center gap-2 text-[10px] text-slate-400 uppercase tracking-wider">
+                        <i data-lucide="percent" class="w-3.5 h-3.5 text-[#72becf] shrink-0"></i>
+                        <span class="truncate">IRR</span>
+                    </div>
+                    <div class="text-sm sm:text-base font-extrabold text-[#72becf] mt-2">61,55%</div>
+                </div>
+                <div class="glass-card border rounded-2xl p-4 flex flex-col justify-between">
+                    <div class="flex items-center gap-2 text-[10px] text-slate-400 uppercase tracking-wider">
+                        <i data-lucide="wallet" class="w-3.5 h-3.5 text-[#72becf] shrink-0"></i>
+                        <span class="truncate">PROVENTOS</span>
+                    </div>
+                    <div class="text-sm sm:text-base font-extrabold text-[#72becf] mt-2">R$ 679.327</div>
+                </div>
+            </div>
+
+            <!-- Gráfico Inferior: Rentabilidade Diária (TWR acumulado vs CDI) -->
+            <div class="glass-card border rounded-3xl p-6 sm:p-8">
+                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+                    <div>
+                        <h3 class="text-lg font-bold dark:text-white text-slate-800 mb-1">Rentabilidade Diária</h3>
+                        <p class="text-[11px] dark:text-slate-400 text-slate-500">TWR acumulado da carteira vs CDI ao longo do tempo</p>
+                    </div>
+                    <div class="flex items-center gap-4 text-xs font-medium">
+                        <span class="flex items-center gap-1.5"><span class="w-3 h-1 bg-[#72becf] rounded-full"></span> Carteira Deco</span>
+                        <span class="flex items-center gap-1.5"><span class="w-3 h-1 bg-slate-500 rounded-full"></span> CDI Benchmark</span>
+                    </div>
+                </div>
+
+                <!-- Gráfico de Linha SVG Animado -->
+                <div class="relative h-64 w-full flex items-center justify-center pt-4">
+                    <svg class="w-full h-full overflow-visible" viewBox="0 0 800 200" preserveAspectRatio="none">
+                        <!-- Linha de Grade Horizontal -->
+                        <line x1="0" y1="0" x2="800" y2="0" stroke="rgba(255,255,255,0.08)" stroke-width="1"></line>
+                        <line x1="0" y1="50" x2="800" y2="50" stroke="rgba(255,255,255,0.08)" stroke-width="1"></line>
+                        <line x1="0" y1="100" x2="800" y2="100" stroke="rgba(255,255,255,0.08)" stroke-width="1"></line>
+                        <line x1="0" y1="150" x2="800" y2="150" stroke="rgba(255,255,255,0.08)" stroke-width="1"></line>
+                        <line x1="0" y1="200" x2="800" y2="200" stroke="rgba(255,255,255,0.15)" stroke-width="1"></line>
+
+                        <!-- CDI Benchmark (Linha pontilhada suave inferior) -->
+                        <path d="M 0 170 Q 200 160 400 135 T 800 100" fill="none" stroke="#94a3b8" stroke-width="2" stroke-dasharray="4 4" opacity="0.6"></path>
+
+                        <!-- Carteira Deco (Linha Traçada Progressivamente Acima) -->
+                        <path d="M 0 190 Q 150 185 300 170 T 500 130 T 650 90 T 800 30" fill="none" stroke="#72becf" stroke-width="3.5" class="animate-chart-line"></path>
+                    </svg>
+                </div>
+
+                <div class="flex justify-between items-center text-[10px] text-slate-400 mt-4 pt-3 border-t dark:border-slate-800/50">
+                    <span>Out/19</span>
+                    <span>Abr/05</span>
+                    <span>Set/17</span>
+                    <span>Fev/29</span>
+                    <span>Ago/17</span>
+                    <span>Fev/01</span>
+                    <span>Jul/14</span>
+                    <span>Dez/27</span>
+                    <span>Jun/15</span>
+                    <span>Dez/01</span>
+                    <span>Mai/17</span>
+                    <span>Nov/01</span>
+                    <span>Abr/19</span>
+                    <span>Out/01</span>
+                    <span>Mar/19</span>
+                    <span>Set/01</span>
+                    <span>Fev/12</span>
+                    <span>Ago/17</span>
+                </div>
+            </div>
+
+            <!-- Rodapé Informativo da Seção -->
+            <div class="mt-8 flex items-center gap-3 text-xs dark:text-slate-300 text-slate-600 bg-white/5 p-4 rounded-2xl border border-white/10">
+                <i data-lucide="shield-check" class="w-5 h-5 text-[#72becf] shrink-0"></i>
+                <span>Dados consolidados de forma automática a partir das principais corretoras do mercado. Seu dinheiro permanece onde está: com você.</span>
+            </div>
+        </section>
+
+        <!-- SEÇÃO: AVALIAÇÃO DE PERFIL -->
+        <section id="blocos" class="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+            <div class="glass-card border rounded-3xl p-6 sm:p-8 lg:p-10 shadow-2xl relative overflow-hidden">
+                <!-- Elemento decorativo de fundo preservado -->
+                <div class="absolute -top-24 -right-24 w-72 h-72 bg-[#387b8d]/10 rounded-full blur-3xl pointer-events-none"></div>
+
+                <div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
+                    <!-- Lado esquerdo: posicionamento da conversa -->
+                    <div class="lg:col-span-5 text-left">
+                        <span class="text-xs font-bold uppercase tracking-widest text-[#00598a] dark:text-[#72becf] block mb-3 font-mono">
+                            04 / AVALIAÇÃO DE PERFIL
+                        </span>
+
+                        <h2 class="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight dark:text-white text-slate-800 leading-tight mb-1">
+                            Antes da carteira,
+                        </h2>
+                        <p class="font-garamond italic font-normal text-3xl sm:text-4xl md:text-5xl text-[#00598a] dark:text-[#72becf] mb-7">
+                            vem você.
+                        </p>
+
+                        <p class="text-xs sm:text-sm dark:text-slate-300 text-slate-600 leading-relaxed mb-8 max-w-xl">
+                            Uma conversa para entender como você pensa, o que precisa proteger e onde quer chegar. A tecnologia entra como apoio — a decisão continua humana.
+                        </p>
+
+                        <ul class="flex flex-col gap-4 text-xs sm:text-sm font-medium dark:text-slate-300 text-slate-600">
+                            <li class="flex items-center gap-3">
+                                <span class="w-2.5 h-2.5 rounded-full bg-[#72becf] shrink-0 shadow-[0_0_10px_rgba(114,190,207,0.35)]"></span>
+                                <span>Objetivos e horizonte</span>
+                            </li>
+                            <li class="flex items-center gap-3">
+                                <span class="w-2.5 h-2.5 rounded-full bg-[#72becf] shrink-0 shadow-[0_0_10px_rgba(114,190,207,0.35)]"></span>
+                                <span>Liquidez e capacidade de risco</span>
+                            </li>
+                            <li class="flex items-center gap-3">
+                                <span class="w-2.5 h-2.5 rounded-full bg-[#72becf] shrink-0 shadow-[0_0_10px_rgba(114,190,207,0.35)]"></span>
+                                <span>Experiência e comportamento</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Card direito: primeira conversa -->
+                    <div class="lg:col-span-7">
+                        <div class="hero-ultra-glass border rounded-3xl p-6 sm:p-7 lg:p-8 relative overflow-hidden">
+                            <div class="flex items-center justify-between gap-4 mb-2">
+                                <span class="text-xs font-medium uppercase tracking-widest text-slate-400">
+                                    PRIMEIRA CONVERSA
+                                </span>
+                                <span class="text-xs sm:text-sm font-medium text-[#72becf] text-right">
+                                    Seu trabalho → Seu patrimônio
+                                </span>
+                            </div>
+
+                            <h3 class="text-xl sm:text-2xl font-bold dark:text-white text-slate-100 leading-tight mb-7">
+                                Construir patrimônio previdenciário.
+                            </h3>
+
+                            <p class="text-xs sm:text-sm dark:text-slate-300 text-slate-400 leading-relaxed mb-8 max-w-3xl">
+                                Atendemos clientes que querem construir, do zero, um patrimônio para o futuro, formado a partir do próprio trabalho duro. Você cuida da sua renda; nós ajudamos a transformar uma parte dela em patrimônio ao longo do tempo.
+                            </p>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
+                                <label class="block">
+                                    <span class="text-[10px] font-bold uppercase tracking-widest text-slate-400 block mb-2">RENDA MENSAL LÍQUIDA</span>
+                                    <input type="text" inputmode="decimal" placeholder="R$ 0.000" aria-label="Renda mensal líquida" class="w-full px-4 py-3 rounded-2xl glass-card dark:text-white text-slate-800 border dark:border-[#387b8d]/25 border-slate-200 text-xs focus:outline-none focus:border-[#387b8d] transition-all shadow-inner placeholder:text-slate-500" />
+                                </label>
+                                <label class="block">
+                                    <span class="text-[10px] font-bold uppercase tracking-widest text-slate-400 block mb-2">PATRIMÔNIO ATUAL</span>
+                                    <input type="text" inputmode="decimal" placeholder="R$ 0.000" aria-label="Patrimônio atual" class="w-full px-4 py-3 rounded-2xl glass-card dark:text-white text-slate-800 border dark:border-[#387b8d]/25 border-slate-200 text-xs focus:outline-none focus:border-[#387b8d] transition-all shadow-inner placeholder:text-slate-500" />
+                                </label>
+                                <label class="block">
+                                    <span class="text-[10px] font-bold uppercase tracking-widest text-slate-400 block mb-2">CUSTO BÁSICO DE VIDA</span>
+                                    <input type="text" inputmode="decimal" placeholder="R$ 0.000" aria-label="Custo básico de vida" class="w-full px-4 py-3 rounded-2xl glass-card dark:text-white text-slate-800 border dark:border-[#387b8d]/25 border-slate-200 text-xs focus:outline-none focus:border-[#387b8d] transition-all shadow-inner placeholder:text-slate-500" />
+                                </label>
+                            </div>
+
+                            <label class="block">
+                                <span class="text-[10px] font-bold uppercase tracking-widest text-slate-400 block mb-2">MEUS OBJETIVOS</span>
+                                <textarea rows="4" placeholder="Conte onde você quer chegar, o que deseja construir e o que gostaria que seu patrimônio proporcionasse no futuro." aria-label="Meus objetivos" class="w-full px-4 py-4 rounded-2xl glass-card dark:text-white text-slate-800 border dark:border-[#387b8d]/25 border-slate-200 text-xs leading-relaxed resize-none focus:outline-none focus:border-[#387b8d] transition-all shadow-inner placeholder:text-slate-500"></textarea>
+                            </label>
+
+                            <div class="mt-7 pt-5 border-t dark:border-slate-800/60 border-slate-200/60 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                                <span class="text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
+                                    Se fizer sentido para você, conversamos pessoalmente.
+                                </span>
+                                <a href="#contato" onclick="scrollToSection('contato', 'sparkle')" class="px-6 py-3 rounded-full bg-gradient-to-r from-[#00598a] to-[#387b8d] text-white font-semibold text-xs hover:brightness-110 shadow-md transition-all whitespace-nowrap">
+                                    Quero marcar uma conversa
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SEÇÃO: CARTEIRA DO CLIENTE (renderizada pelo app após login) -->
+        <section id="portfolio-view" class="hidden py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        </section>
+
+        <!-- FOOTER -->
+        <footer id="contato" class="border-t dark:border-[#1e303a] border-slate-200 dark:bg-[#061016]/90 bg-slate-100/90 pt-12 pb-8 px-4 sm:px-6 lg:px-8 backdrop-blur-md">
+            <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6 mb-8">
+                <span class="font-garamond text-lg font-semibold dark:text-white text-slate-800 flex items-center gap-2">
+                    <span class="w-6 h-6 rounded-full bg-[#387b8d] text-white flex items-center justify-center font-bold text-xs">D.</span>
+                    Deco Investimentos
+                </span>
+                <div class="flex flex-wrap justify-center gap-6 text-xs dark:text-slate-300 text-slate-600">
+                    <a href="#hero" onclick="scrollToSection('hero', 'sparkle')" class="hover:text-[#387b8d] transition-colors">Início</a>
+                    <a href="#solucoes" onclick="scrollToSection('solucoes', 'candlestick')" class="hover:text-[#387b8d] transition-colors">Estratégia</a>
+                    <a href="#metodologia" onclick="scrollToSection('metodologia', 'rubik')" class="hover:text-[#387b8d] transition-colors">Metodologia</a>
+                    <a href="#performance" onclick="scrollToSection('performance', 'barchart')" class="hover:text-[#387b8d] transition-colors">Rentabilidade</a>
+                    <a href="#blocos" onclick="scrollToSection('blocos', 'decotext')" class="hover:text-[#387b8d] transition-colors">Avaliação de Perfil</a>
+                    <a href="#contato" onclick="scrollToSection('contato', 'sparkle')" class="hover:text-[#387b8d] transition-colors">Contato</a>
+                </div>
+            </div>
+            <div class="max-w-7xl mx-auto border-t dark:border-[#1e303a] border-slate-200 pt-6 text-center text-[11px] dark:text-slate-400 text-slate-600">
+                &copy; 2026 Deco Investimentos. Todos os direitos reservados. Atendimento Humano e Transparente.
+            </div>
+        </footer>
+    </main>
+
+    <!-- MOTOR JAVASCRIPT: THREE.JS 3D PARTICLE ENGINE + SCROLL SYNC -->
+    <script>
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
+
+        const chatMessagesEl = document.getElementById('chat-messages');
+        const chatInputEl = document.getElementById('chat-input');
+        const chatSendBtn = document.getElementById('chat-send-btn');
+        const typingIndicatorEl = document.getElementById('typing-indicator');
+
+        let chatHistory = [
+            {
+                role: 'user',
+                parts: [{ text: 'Você é o assistente virtual da Deco Investimentos, uma consultoria financeira liderada pelo Deco (Investidor Profissional, CNPI 10318, CVM 004670-1). A filosofia é 100% humana, transparente, sem robôs na gestão, cobrando apenas taxa de performance sob o excedente do CDI. Seja direto, educado, profissional e prestativo.' }]
+            },
+            {
+                role: 'model',
+                parts: [{ text: 'Entendido. Estou pronto para ajudar os clientes da Deco Investimentos com análises de suitability, estratégias de renda fixa e renda variável de forma transparente e humana.' }]
+            }
+        ];
+
+        async function callGeminiAPI(contents) {
+            const apiKey = "";
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+            
+            const payload = {
+                contents: contents,
+                systemInstruction: {
+                    parts: [{ text: "Você é o especialista sênior da Deco Investimentos. Forneça respostas concisas, profissionais, humanas e focadas na proteção patrimonial e rentabilidade tática." }]
+                }
+            };
+
+            let delay = 1000;
+            for (let attempt = 0; attempt < 4; attempt++) {
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    const result = await response.json();
+                    const candidate = result.candidates?.[0];
+                    if (candidate && candidate.content?.parts?.[0]?.text) {
+                        return candidate.content.parts[0].text;
+                    }
+                } catch (e) {}
+                await new Promise(res => setTimeout(res, delay));
+                delay *= 2;
+            }
+            return "Desculpe, ocorreu uma instabilidade momentânea na conexão. Por favor, tente novamente em instantes.";
+        }
+
+        async function handleUserMessage(customText) {
+            const text = customText || chatInputEl.value.trim();
+            if (!text) return;
+
+            appendMessage('user', text);
+            if (!customText) chatInputEl.value = '';
+            chatHistory.push({ role: 'user', parts: [{ text: text }] });
+
+            typingIndicatorEl.classList.remove('hidden');
+            chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
+
+            const aiResponseText = await callGeminiAPI(chatHistory);
+
+            typingIndicatorEl.classList.add('hidden');
+            appendMessage('model', aiResponseText);
+            chatHistory.push({ role: 'model', parts: [{ text: aiResponseText }] });
+            chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
+        }
+
+        window.sendQuickPrompt = function(promptText) {
+            handleUserMessage(promptText);
+        };
+
+        function appendMessage(role, text) {
+            const isUser = role === 'user';
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `flex items-start gap-3 ${isUser ? 'flex-row-reverse' : ''}`;
+            
+            const avatar = isUser 
+                ? '<div class="w-8 h-8 rounded-full bg-[#387b8d] text-white flex items-center justify-center shrink-0 font-bold text-xs shadow-md">Você</div>'
+                : '<div class="w-8 h-8 rounded-full bg-gradient-to-br from-[#00598a] to-[#387b8d] text-white flex items-center justify-center shrink-0 font-bold text-xs shadow-md">DI</div>';
+
+            const bubbleClass = isUser
+                ? 'bg-gradient-to-r from-[#00598a] to-[#387b8d] text-white rounded-2xl rounded-tr-none shadow-md'
+                : 'glass-card rounded-2xl rounded-tl-none dark:text-slate-200 text-slate-700 border shadow-sm';
+
+            msgDiv.innerHTML = `
+                ${avatar}
+                <div class="${bubbleClass} p-4 max-w-[85%] text-xs sm:text-sm leading-relaxed">
+                    ${escapeHtml(text)}
+                </div>
+            `;
+            chatMessagesEl.appendChild(msgDiv);
+        }
+
+        function escapeHtml(string) {
+            return string.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+
+        if (chatSendBtn) chatSendBtn.addEventListener('click', () => handleUserMessage());
+        if (chatInputEl) {
+            chatInputEl.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') handleUserMessage();
+            });
+        }
+
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        const htmlElement = document.documentElement;
+
+        if (themeToggleBtn) {
+            themeToggleBtn.addEventListener('click', () => {
+                htmlElement.classList.toggle('dark');
+                const isDark = htmlElement.classList.contains('dark');
+                updateParticleTheme(isDark);
+            });
+        }
+
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        if (mobileMenuBtn && mobileMenu) {
+            mobileMenuBtn.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+        }
+
+        let isProgrammaticScroll = false;
+        let scrollTimeout = null;
+
+        window.scrollToSection = function(sectionId, shapeName) {
+            const target = document.getElementById(sectionId);
+            if (target) {
+                isProgrammaticScroll = true;
+                if (scrollTimeout) clearTimeout(scrollTimeout);
+
+                target.scrollIntoView({ behavior: 'smooth' });
+
+                if (typeof setShapeTarget === 'function' && shapeName) {
+                    setShapeTarget(shapeName);
+                }
+
+                scrollTimeout = setTimeout(() => {
+                    isProgrammaticScroll = false;
+                }, 1000);
+            }
+            if (mobileMenu && !mobileMenu.classList.contains('hidden')) {
+                mobileMenu.classList.add('hidden');
+            }
+        };
+
+        const canvas = document.getElementById('webgl-canvas');
+        const scene = new THREE.Scene();
+
+        const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.z = 180;
+
+        const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+        const PARTICLE_COUNT = 20000;
+        const geometry = new THREE.BufferGeometry();
+
+        const currentPositions = new Float32Array(PARTICLE_COUNT * 3);
+        const targetPositions = new Float32Array(PARTICLE_COUNT * 3);
+        const colors = new Float32Array(PARTICLE_COUNT * 3);
+        const sizes = new Float32Array(PARTICLE_COUNT);
+
+        const palette = [
+            new THREE.Color('#00598a'),
+            new THREE.Color('#387b8d'),
+            new THREE.Color('#4ca3b8'),
+            new THREE.Color('#1f8ba3'),
+            new THREE.Color('#72becf'),
+            new THREE.Color('#8b5cf6')
+        ];
+
+        const shapeTargets = {
+            sparkle: new Float32Array(PARTICLE_COUNT * 3),
+            candlestick: new Float32Array(PARTICLE_COUNT * 3),
+            rubik: new Float32Array(PARTICLE_COUNT * 3),
+            barchart: new Float32Array(PARTICLE_COUNT * 3),
+            decotext: new Float32Array(PARTICLE_COUNT * 3)
+        };
+
+        function createParticleTexture() {
+            const canvasTex = document.createElement('canvas');
+            canvasTex.width = 64;
+            canvasTex.height = 64;
+            const ctxTex = canvasTex.getContext('2d');
+
+            const grad = ctxTex.createRadialGradient(32, 32, 0, 32, 32, 32);
+            grad.addColorStop(0, 'rgba(255, 255, 255, 1)');
+            grad.addColorStop(0.3, 'rgba(255, 255, 255, 0.8)');
+            grad.addColorStop(0.6, 'rgba(255, 255, 255, 0.2)');
+            grad.addColorStop(1, 'rgba(255, 255, 255, 0)');
+
+            ctxTex.fillStyle = grad;
+            ctxTex.fillRect(0, 0, 64, 64);
+
+            const texture = new THREE.Texture(canvasTex);
+            texture.needsUpdate = true;
+            return texture;
+        }
+
+        for (let i = 0; i < PARTICLE_COUNT; i++) {
+            const i3 = i * 3;
+            shapeTargets.sparkle[i3] = (Math.random() - 0.5) * 450;
+            shapeTargets.sparkle[i3 + 1] = (Math.random() - 0.5) * 350;
+            shapeTargets.sparkle[i3 + 2] = (Math.random() - 0.5) * 280;
+        }
+
+        const numCandles = 16;
+        const candleWidth = 140;
+        for (let i = 0; i < PARTICLE_COUNT; i++) {
+            const i3 = i * 3;
+            const candleIndex = Math.floor(Math.random() * numCandles);
+            const cx = -70 + (candleIndex / (numCandles - 1)) * candleWidth;
+            
+            const openCloseSpread = (Math.random() - 0.5) * 40;
+            const baseCenterY = Math.sin(candleIndex * 0.8) * 20;
+            const openY = baseCenterY + openCloseSpread * 0.5;
+            const closeY = baseCenterY - openCloseSpread * 0.5;
+            const lowY = Math.min(openY, closeY) - 15 - Math.random() * 15;
+            const highY = Math.max(openY, closeY) + 15 + Math.random() * 15;
+
+            const partType = Math.random();
+            if (partType < 0.35) {
+                shapeTargets.candlestick[i3] = cx + (Math.random() - 0.5) * 8;
+                shapeTargets.candlestick[i3 + 1] = Math.min(openY, closeY) + Math.random() * Math.abs(openY - closeY);
+                shapeTargets.candlestick[i3 + 2] = (Math.random() - 0.5) * 8;
+            } else if (partType < 0.75) {
+                const isTop = Math.random() < 0.5;
+                shapeTargets.candlestick[i3] = cx + (Math.random() - 0.5) * 2.5;
+                shapeTargets.candlestick[i3 + 1] = isTop ? (Math.max(openY, closeY) + Math.random() * (highY - Math.max(openY, closeY))) : (Math.min(openY, closeY) - Math.random() * (Math.min(openY, closeY) - lowY));
+                shapeTargets.candlestick[i3 + 2] = (Math.random() - 0.5) * 5;
+            } else {
+                shapeTargets.candlestick[i3] = (Math.random() - 0.5) * 180;
+                shapeTargets.candlestick[i3 + 1] = (Math.random() - 0.5) * 120;
+                shapeTargets.candlestick[i3 + 2] = (Math.random() - 0.5) * 40;
+            }
+        }
+
+        for (let i = 0; i < PARTICLE_COUNT; i++) {
+            const i3 = i * 3;
+            const cubeSize = 110;
+            const gridCount = 3;
+            
+            const partType = Math.random();
+            if (partType < 0.65) {
+                const face = Math.floor(Math.random() * 6);
+                let fx = (Math.random() - 0.5) * cubeSize;
+                let fy = (Math.random() - 0.5) * cubeSize;
+                let fz = (Math.random() - 0.5) * cubeSize;
+                
+                if (face === 0) fx = cubeSize / 2;
+                else if (face === 1) fx = -cubeSize / 2;
+                else if (face === 2) fy = cubeSize / 2;
+                else if (face === 3) fy = -cubeSize / 2;
+                else if (face === 4) fz = cubeSize / 2;
+                else fz = -cubeSize / 2;
+                
+                shapeTargets.rubik[i3] = Math.round(fx / (cubeSize / gridCount)) * (cubeSize / gridCount) + (Math.random() - 0.5) * 8;
+                shapeTargets.rubik[i3 + 1] = Math.round(fy / (cubeSize / gridCount)) * (cubeSize / gridCount) + (Math.random() - 0.5) * 8;
+                shapeTargets.rubik[i3 + 2] = Math.round(fz / (cubeSize / gridCount)) * (cubeSize / gridCount) + (Math.random() - 0.5) * 8;
+            } else {
+                shapeTargets.rubik[i3] = (Math.random() - 0.5) * cubeSize * 1.3;
+                shapeTargets.rubik[i3 + 1] = (Math.random() - 0.5) * cubeSize * 1.3;
+                shapeTargets.rubik[i3 + 2] = (Math.random() - 0.5) * cubeSize * 1.3;
+            }
+        }
+
+        const numBars = 8;
+        const totalBarWidth = 140;
+        for (let i = 0; i < PARTICLE_COUNT; i++) {
+            const i3 = i * 3;
+            const barIndex = Math.floor(Math.random() * numBars);
+            const bx = -70 + (barIndex / (numBars - 1)) * totalBarWidth;
+            
+            const barHeight = 35 + (barIndex * 16) + Math.random() * 8;
+            const barBaseY = -55;
+            
+            const partType = Math.random();
+            if (partType < 0.75) {
+                shapeTargets.barchart[i3] = bx + (Math.random() - 0.5) * 8;
+                shapeTargets.barchart[i3 + 1] = barBaseY + Math.random() * barHeight;
+                shapeTargets.barchart[i3 + 2] = (Math.random() - 0.5) * 12;
+            } else if (partType < 0.94) {
+                const trendProgress = barIndex / (numBars - 1);
+                const trendY = barBaseY + 25 + trendProgress * 110;
+                shapeTargets.barchart[i3] = bx + (Math.random() - 0.5) * 6;
+                shapeTargets.barchart[i3 + 1] = trendY + (Math.random() - 0.5) * 6;
+                shapeTargets.barchart[i3 + 2] = (Math.random() - 0.5) * 8;
+            } else {
+                shapeTargets.barchart[i3] = (Math.random() - 0.5) * 180;
+                shapeTargets.barchart[i3 + 1] = (Math.random() - 0.5) * 80;
+                shapeTargets.barchart[i3 + 2] = (Math.random() - 0.5) * 20;
+            }
+        }
+
+        for (let i = 0; i < PARTICLE_COUNT; i++) {
+            const i3 = i * 3;
+            const t = Math.PI * 2 * Math.random();
+            const u = Math.PI * (Math.random() - 0.5);
+            
+            const x = 14 * Math.pow(Math.sin(t), 3) * Math.cos(u);
+            const y = (11 * Math.cos(t) - 4 * Math.cos(2 * t) - 1.5 * Math.cos(3 * t) - 0.5 * Math.cos(4 * t)) * Math.cos(u);
+            const z = 12 * Math.sin(u) * (0.8 - Math.abs(Math.cos(t)) * 0.3);
+
+            const scaleFactor = 4.2;
+            shapeTargets.decotext[i3] = x * scaleFactor + (Math.random() - 0.5) * 12;
+            shapeTargets.decotext[i3 + 1] = y * scaleFactor + (Math.random() - 0.5) * 12;
+            shapeTargets.decotext[i3 + 2] = z * scaleFactor + (Math.random() - 0.5) * 16;
+        }
+
+        for (let i = 0; i < PARTICLE_COUNT; i++) {
+            const i3 = i * 3;
+            currentPositions[i3] = shapeTargets.sparkle[i3];
+            currentPositions[i3 + 1] = shapeTargets.sparkle[i3 + 1];
+            currentPositions[i3 + 2] = shapeTargets.sparkle[i3 + 2];
+
+            targetPositions[i3] = currentPositions[i3];
+            targetPositions[i3 + 1] = currentPositions[i3 + 1];
+            targetPositions[i3 + 2] = currentPositions[i3 + 2];
+
+            const color = palette[Math.floor(Math.random() * palette.length)];
+            colors[i3] = color.r;
+            colors[i3 + 1] = color.g;
+            colors[i3 + 2] = color.b;
+
+            sizes[i] = Math.random() * 2.2 + 0.8;
+        }
+
+        geometry.setAttribute('position', new THREE.BufferAttribute(currentPositions, 3));
+        geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+        geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+
+        const material = new THREE.PointsMaterial({
+            size: 2.6,
+            vertexColors: true,
+            map: createParticleTexture(),
+            transparent: true,
+            opacity: 0.85,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false
+        });
+
+        const particleSystem = new THREE.Points(geometry, material);
+        scene.add(particleSystem);
+
+        function updateParticleTheme(isDark) {
+            if (isDark) {
+                material.blending = THREE.AdditiveBlending;
+                material.opacity = 0.85;
+            } else {
+                material.blending = THREE.NormalBlending;
+                material.opacity = 0.55;
+            }
+            material.needsUpdate = true;
+        }
+
+        window.setShapeTarget = function(shapeName) {
+            if (!shapeTargets[shapeName]) return;
+            window.currentShape = shapeName;
+            const targetArray = shapeTargets[shapeName];
+            for (let i = 0; i < PARTICLE_COUNT * 3; i++) {
+                targetPositions[i] = targetArray[i];
+            }
+
+            const navIdMap = {
+                'sparkle': 'hero',
+                'candlestick': 'estrategia',
+                'rubik': 'metodologia',
+                'barchart': 'rentabilidade',
+                'decotext': 'avaliacao'
+            };
+
+            document.querySelectorAll('.nav-link').forEach(btn => btn.classList.remove('active'));
+            const activeNavId = `nav-${navIdMap[shapeName] || shapeName}`;
+            const activeBtn = document.getElementById(activeNavId);
+            if (activeBtn) activeBtn.classList.add('active');
+        };
+
+        const sections = ['hero', 'solucoes', 'metodologia', 'performance', 'blocos'];
+        const shapesMap = {
+            'hero': 'sparkle',
+            'solucoes': 'candlestick',
+            'metodologia': 'rubik',
+            'performance': 'barchart',
+            'blocos': 'decotext'
+        };
+
+        function checkActiveSectionOnScroll() {
+            if (isProgrammaticScroll) return;
+
+            const scrollY = window.scrollY;
+            if (scrollY < 120) {
+                if (window.currentShape !== 'sparkle') setShapeTarget('sparkle');
+                return;
+            }
+
+            for (let i = sections.length - 1; i >= 0; i--) {
+                const id = sections[i];
+                const el = document.getElementById(id);
+                if (el) {
+                    const rect = el.getBoundingClientRect();
+                    if (rect.top <= window.innerHeight * 0.4) {
+                        const targetShape = shapesMap[id];
+                        if (targetShape && window.currentShape !== targetShape) {
+                            setShapeTarget(targetShape);
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+
+        window.addEventListener('scroll', checkActiveSectionOnScroll, { passive: true });
+
+        const mouse = { x: 0, y: 0, targetX: 0, targetY: 0 };
+        window.addEventListener('mousemove', (e) => {
+            mouse.targetX = (e.clientX / window.innerWidth - 0.5) * 2;
+            mouse.targetY = -(e.clientY / window.innerHeight - 0.5) * 2;
+        });
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        let clock = new THREE.Clock();
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            const elapsedTime = clock.getElapsedTime();
+
+            mouse.x += (mouse.targetX - mouse.x) * 0.05;
+            mouse.y += (mouse.targetY - mouse.y) * 0.05;
+
+            const isHeartShape = window.currentShape === 'decotext';
+            const isRubikShape = window.currentShape === 'rubik';
+            const rotSpeedMultiplier = isHeartShape ? 0.8 : 1.0;
+
+            particleSystem.rotation.y = elapsedTime * 0.1 * rotSpeedMultiplier + mouse.x * 0.35;
+            particleSystem.rotation.x = Math.sin(elapsedTime * 0.08 * rotSpeedMultiplier) * 0.1 + mouse.y * 0.25;
+
+            const positionsAttr = geometry.attributes.position;
+            const posArray = positionsAttr.array;
+
+            const lerpFactor = isHeartShape ? 0.06 : 0.04;
+
+            let pulseScale = 1.0;
+            if (isHeartShape) {
+                const beat = Math.sin(elapsedTime * 4.5) * 0.5 + Math.sin(elapsedTime * 9.0) * 0.15;
+                pulseScale = 1.0 + beat * 0.12;
+            }
+
+            for (let i = 0; i < PARTICLE_COUNT; i++) {
+                const i3 = i * 3;
+                let tx = targetPositions[i3];
+                let ty = targetPositions[i3 + 1];
+                let tz = targetPositions[i3 + 2];
+
+                if (isHeartShape) {
+                    tx *= pulseScale;
+                    ty *= pulseScale;
+                    tz *= pulseScale;
+                }
+
+                if (isRubikShape) {
+                    const blockPhase = Math.floor(i / (PARTICLE_COUNT / 4));
+                    const waveOffset = Math.sin(elapsedTime * 2.0 + blockPhase * 1.57) * 12;
+                    if (blockPhase === 0) tx += waveOffset;
+                    else if (blockPhase === 1) ty += waveOffset;
+                    else if (blockPhase === 2) tz += waveOffset;
+                }
+
+                posArray[i3] += (tx - posArray[i3]) * lerpFactor;
+                posArray[i3 + 1] += (ty - posArray[i3 + 1]) * lerpFactor;
+                posArray[i3 + 2] += (tz - posArray[i3 + 2]) * lerpFactor;
+            }
+
+            positionsAttr.needsUpdate = true;
+            renderer.render(scene, camera);
+        }
+
+        window.onload = function() {
+            window.currentShape = 'sparkle';
+            animate();
+        };
+    </script>
+
+    <!-- ============================================================
+         DADOS EMBUTIDOS DO DECOAI (gerados pelo build)
+         O conteúdo entre os marcadores abaixo é substituído por
+         scripts/build-site.js a cada publicação.
+         ============================================================ -->
+    <script>
+        /*__DECO_SITE_DATA__*/
+    </script>
+
+    <!-- ============================================================
+         APP DO SITE (login + renderização das carteiras)
+         Conteúdo de assets/site-app.js, injetado pelo build.
+         ============================================================ -->
+    <script>
+        /*__DECO_SITE_APP__*/
+    </script>
+
+    <!-- MODAL DE LOGIN -->
+    <div id="login-modal" class="hidden fixed inset-0 z-[100] items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" data-login-close></div>
+        <div class="relative w-full max-w-md hero-ultra-glass rounded-3xl p-8 shadow-2xl border border-[#387b8d]/25">
+            <button type="button" data-login-close class="absolute top-4 right-4 p-1 rounded-full dark:text-slate-400 text-slate-500 hover:bg-white/10 transition-colors" aria-label="Fechar">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            <div class="flex items-center gap-3 mb-6">
+                <span class="w-10 h-10 rounded-full bg-[#387b8d] text-white flex items-center justify-center font-bold text-sm">D.</span>
+                <div>
+                    <h3 class="text-lg font-bold dark:text-white text-slate-800 leading-tight">Área do Cliente</h3>
+                    <p class="text-[11px] dark:text-slate-400 text-slate-500">Acesse sua carteira acompanhada pelo Deco.</p>
+                </div>
+            </div>
+            <form id="login-form" class="flex flex-col gap-4">
+                <label class="block">
+                    <span class="text-[10px] font-bold uppercase tracking-widest text-slate-400 block mb-2">USUÁRIO</span>
+                    <input id="login-user" type="text" autocomplete="username" placeholder="Seu e-mail de acesso" class="w-full px-4 py-3 rounded-2xl glass-card dark:text-white text-slate-800 border dark:border-[#387b8d]/25 border-slate-200 text-sm focus:outline-none focus:border-[#387b8d] transition-all shadow-inner placeholder:text-slate-500" />
+                </label>
+                <label class="block">
+                    <span class="text-[10px] font-bold uppercase tracking-widest text-slate-400 block mb-2">SENHA</span>
+                    <input id="login-password" type="password" autocomplete="current-password" placeholder="Sua senha" class="w-full px-4 py-3 rounded-2xl glass-card dark:text-white text-slate-800 border dark:border-[#387b8d]/25 border-slate-200 text-sm focus:outline-none focus:border-[#387b8d] transition-all shadow-inner placeholder:text-slate-500" />
+                </label>
+                <p id="login-error" class="hidden text-xs text-red-500 dark:text-red-400 font-medium">Usuário ou senha inválidos.</p>
+                <button type="submit" class="mt-2 w-full px-6 py-3 rounded-full bg-gradient-to-r from-[#00598a] to-[#387b8d] text-white font-semibold text-xs hover:brightness-110 shadow-md transition-all">
+                    Entrar na minha carteira
+                </button>
+            </form>
+            <p class="mt-4 text-[10px] text-slate-400 text-center leading-relaxed">
+                Seus dados são protegidos e processados localmente no seu navegador.
+            </p>
+        </div>
+    </div>
+
+    <!-- MARKER DE FIM DO DOCUMENTO -->
+</body>
+</html>
