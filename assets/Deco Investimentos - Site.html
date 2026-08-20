@@ -1544,8 +1544,8 @@
             const isRubikShape = window.currentShape === 'rubik';
             const rotSpeedMultiplier = isHeartShape ? 0.8 : 1.0;
 
-            particleSystem.rotation.y = elapsedTime * 0.1 * rotSpeedMultiplier + mouse.x * 0.35;
-            particleSystem.rotation.x = Math.sin(elapsedTime * 0.08 * rotSpeedMultiplier) * 0.1 + mouse.y * 0.25;
+            particleSystem.rotation.y = elapsedTime * 0.01 * rotSpeedMultiplier + mouse.x * 0.35;
+            particleSystem.rotation.x = Math.sin(elapsedTime * 0.008 * rotSpeedMultiplier) * 0.1 + mouse.y * 0.25;
 
             const positionsAttr = geometry.attributes.position;
             const posArray = positionsAttr.array;
@@ -1554,7 +1554,7 @@
 
             let pulseScale = 1.0;
             if (isHeartShape) {
-                const beat = Math.sin(elapsedTime * 4.5) * 0.5 + Math.sin(elapsedTime * 9.0) * 0.15;
+                const beat = Math.sin(elapsedTime * 0.45) * 0.5 + Math.sin(elapsedTime * 0.9) * 0.15;
                 pulseScale = 1.0 + beat * 0.12;
             }
 
@@ -1572,7 +1572,7 @@
 
                 if (isRubikShape) {
                     const blockPhase = Math.floor(i / (PARTICLE_COUNT / 4));
-                    const waveOffset = Math.sin(elapsedTime * 2.0 + blockPhase * 1.57) * 12;
+                    const waveOffset = Math.sin(elapsedTime * 0.2 + blockPhase * 1.57) * 12;
                     if (blockPhase === 0) tx += waveOffset;
                     else if (blockPhase === 1) ty += waveOffset;
                     else if (blockPhase === 2) tz += waveOffset;
