@@ -1425,13 +1425,14 @@
             if (activeBtn) activeBtn.classList.add('active');
         };
 
-        const sections = ['hero', 'solucoes', 'metodologia', 'performance', 'blocos'];
+        const sections = ['hero', 'solucoes', 'metodologia', 'performance', 'blocos', 'portfolio-view'];
         const shapesMap = {
             'hero': 'sparkle',
             'solucoes': 'candlestick',
             'metodologia': 'rubik',
             'performance': 'barchart',
-            'blocos': 'decotext'
+            'blocos': 'decotext',
+            'portfolio-view': 'barchart'
         };
 
         function checkActiveSectionOnScroll() {
@@ -1446,7 +1447,7 @@
             for (let i = sections.length - 1; i >= 0; i--) {
                 const id = sections[i];
                 const el = document.getElementById(id);
-                if (el) {
+                if (el && el.offsetParent !== null) {
                     const rect = el.getBoundingClientRect();
                     if (rect.top <= window.innerHeight * 0.4) {
                         const targetShape = shapesMap[id];

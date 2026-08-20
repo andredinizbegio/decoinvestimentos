@@ -1041,6 +1041,8 @@
     mount.classList.remove('hidden');
     mount.classList.add('flex', 'flex-col');
 
+    if (window.setShapeTarget) window.setShapeTarget('barchart');
+
     if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
 
     if (!mount.__chartsBound) {
