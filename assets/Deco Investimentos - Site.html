@@ -43,9 +43,14 @@
     </script>
 
     <style>
+        html {
+            overflow-x: hidden;
+            overflow-x: clip;
+        }
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
             overflow-x: hidden;
+            overflow-x: clip;
             transition: background-color 0.4s ease, color 0.4s ease;
         }
 
@@ -887,7 +892,7 @@
                     </svg>
                 </div>
 
-                <div class="flex justify-between items-center text-[10px] text-slate-400 mt-4 pt-3 border-t dark:border-slate-800/50">
+                <div class="flex justify-between items-center text-[10px] text-slate-400 mt-4 pt-3 border-t dark:border-slate-800/50 overflow-x-auto">
                     <span>Out/19</span>
                     <span>Abr/05</span>
                     <span>Set/17</span>
