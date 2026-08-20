@@ -529,7 +529,6 @@
           svg +
           '<div class="absolute text-center">' +
             '<span class="text-xs font-bold dark:text-white text-slate-600 block">Ativos</span>' +
-            '<span class="text-[10px] text-[#72becf] font-mono">100% Diversificado</span>' +
           '</div>' +
         '</div>' +
         '<div class="grid grid-cols-2 gap-x-4 gap-y-2 text-[11px] font-medium">' + legend + '</div>' +
@@ -688,7 +687,7 @@
         '<span class="flex items-center gap-1.5"><span class="w-3 h-1 bg-[#387b8d] rounded-full"></span> Recebido</span>' +
         '<span class="flex items-center gap-1.5"><span class="w-3 h-1 bg-slate-500 rounded-full"></span> Estimado</span>' +
       '</div>';
-    return card('Estimativa de Dividendos Futuros', 'Dividendos recebidos nos últimos 12 meses e estimativas para os próximos 12 meses (meses correntes e futuros em cinza)', html);
+    return card('Estimativa de Dividendos Futuros', 'Dividendos recebidos nos últimos 12 meses e estimativas para os próximos 12 meses', html);
   }
 
   /* ----------------------------------------------------------

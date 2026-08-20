@@ -264,7 +264,7 @@
         <div class="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             
             <!-- CARD HERO COM TRANSPARÊNCIA ULTRA -->
-            <div class="lg:col-span-6 text-left hero-ultra-glass p-6 sm:p-10 rounded-3xl">
+            <div class="lg:col-span-5 text-left hero-ultra-glass p-6 sm:p-10 rounded-3xl">
                 
                 <span class="text-xs font-bold uppercase tracking-widest text-[#00598a] dark:text-[#72becf] block mb-2">
                     Consultoria Financeira
@@ -337,7 +337,7 @@
                 </p>
             </div>
 
-            <div class="hidden lg:block lg:col-span-5 pointer-events-none"></div>
+            <div class="hidden lg:block lg:col-span-6 pointer-events-none"></div>
         </div>
     </section>
 
@@ -577,7 +577,6 @@
                             </svg>
                             <div class="absolute text-center">
                                 <span class="text-xs font-bold dark:text-white text-slate-600 block">Ativos</span>
-                                <span class="text-[10px] text-[#72becf] font-mono">100% Diversificado</span>
                             </div>
                         </div>
 
@@ -698,7 +697,7 @@
             <!-- CARD CENTRAL: Estimativa de Dividendos Futuros -->
             <div class="glass-card border rounded-3xl p-6 sm:p-8 mb-8 min-w-0">
                 <h3 class="text-lg font-bold dark:text-white text-slate-600 mb-1">Estimativa de Dividendos Futuros</h3>
-                <p class="text-[11px] dark:text-slate-400 text-slate-500 mb-6">Dividendos recebidos nos últimos 12 meses e estimativas para os próximos 12 meses (meses correntes e futuros em cinza)</p>
+                <p class="text-[11px] dark:text-slate-400 text-slate-500 mb-6">Dividendos recebidos nos últimos 12 meses e estimativas para os próximos 12 meses</p>
 
                 <!-- Gráfico de Barras Mensais (Passado em azul, corrente e futuros em cinza) -->
                 <div class="h-44 flex items-end justify-between gap-1 pt-6 pb-2 px-1 relative border-b dark:border-slate-800/80 border-slate-200 overflow-x-auto">
@@ -1371,6 +1370,7 @@
 
         const particleSystem = new THREE.Points(geometry, material);
         scene.add(particleSystem);
+        updateParticleTheme(document.documentElement.classList.contains('dark'));
 
         function updateParticleTheme(isDark) {
             if (isDark) {
