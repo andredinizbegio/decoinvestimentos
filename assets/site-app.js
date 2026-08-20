@@ -192,7 +192,7 @@
   function card(title, subtitle, bodyHtml, extraClass) {
     return (
       '<div class="glass-card border rounded-3xl p-6 sm:p-8 min-w-0 ' + (extraClass || '') + '">' +
-        '<h3 class="text-lg font-bold dark:text-white text-slate-800 mb-1">' + title + '</h3>' +
+        '<h3 class="text-lg font-bold dark:text-white text-slate-600 mb-1">' + title + '</h3>' +
         (subtitle ? '<p class="text-[11px] dark:text-slate-400 text-slate-500 mb-6">' + subtitle + '</p>' : '') +
         bodyHtml +
       '</div>'
@@ -213,7 +213,7 @@
         '<div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">' +
           '<div>' +
             '<span class="text-xs font-bold uppercase tracking-widest text-[#00598a] dark:text-[#72becf] block mb-2 font-mono">ÁREA DO CLIENTE</span>' +
-            '<h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight dark:text-white text-slate-800 leading-tight">Carteira de ' + escapeHtml(client.name) + '</h2>' +
+            '<h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight dark:text-white text-slate-600 leading-tight">Carteira de ' + escapeHtml(client.name) + '</h2>' +
             '<p class="text-[11px] dark:text-slate-400 text-slate-500 mt-1">ID ' + escapeHtml(client.id) + ' · Atualizada em ' + escapeHtml(updated) + '</p>' +
           '</div>' +
           '<div class="flex items-center gap-3">' +
@@ -528,7 +528,7 @@
         '<div class="relative w-48 h-48 flex items-center justify-center">' +
           svg +
           '<div class="absolute text-center">' +
-            '<span class="text-xs font-bold dark:text-white text-slate-800 block">Ativos</span>' +
+            '<span class="text-xs font-bold dark:text-white text-slate-600 block">Ativos</span>' +
             '<span class="text-[10px] text-[#72becf] font-mono">100% Diversificado</span>' +
           '</div>' +
         '</div>' +
