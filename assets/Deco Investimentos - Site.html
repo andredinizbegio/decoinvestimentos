@@ -130,12 +130,12 @@
 
         /* Animações Gráficas */
         @keyframes drawLine {
-            from { stroke-dashoffset: 1000; }
+            from { stroke-dashoffset: 1000000; }
             to { stroke-dashoffset: 0; }
         }
         .animate-chart-line {
-            stroke-dasharray: 1000;
-            stroke-dashoffset: 1000;
+            stroke-dasharray: 1000000;
+            stroke-dashoffset: 1000000;
             animation: drawLine 2.5s ease-out forwards;
         }
 
@@ -1581,9 +1581,6 @@
                     Entrar na minha carteira
                 </button>
             </form>
-            <p class="mt-4 text-[10px] text-slate-400 text-center leading-relaxed">
-                Seus dados são protegidos e processados localmente no seu navegador.
-            </p>
         </div>
     </div>
 
