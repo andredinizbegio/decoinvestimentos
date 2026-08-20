@@ -8,7 +8,7 @@ Site institucional da **Deco Investimentos** publicado via **GitHub Pages** em
 | Pasta | Conteúdo |
 |---|---|
 | `assets/` | Template do site (`Deco Investimentos - Site.html`) + app do site (`site-app.js`) |
-| `site-data/` | Dados **sanitizados** exportados do DecoAI (`data.json`) — sem senhas em texto puro, apenas hash SHA-256 |
+| `site-data/` | Dados **criptografados** exportados do DecoAI (`data.json`) — sem senha, sem dados em texto puro |
 | `scripts/` | `build-site.js` — gera `docs/index.html` embutindo os dados e o app no template |
 | `.github/workflows/` | `deploy-site.yml` — publica o site a cada push em `main` (ou manualmente) |
 
@@ -24,7 +24,7 @@ versionada no GitHub). Para publicar atualizações:
    ```
 
    Ele lê `database/portfolios/*` e o `projections_master.csv` e gera o `data.json`
-   com os dados das carteiras. As senhas entram apenas como hash SHA-256.
+   com os dados **criptografados** das carteiras.
 
 2. Copie o `site-data/data.json` gerado para este repositório:
 
@@ -46,16 +46,28 @@ possível acionar manualmente em **Actions → Deploy Site → Run workflow**.
 ## Acesso dos clientes
 
 O botão **Login** no site abre uma modal. O cliente informa o usuário e a senha
-guardados em `client_info.csv` (colunas `Login Gorila` / `Senha Gorila`). A
-validação é feita **localmente no navegador**, comparando o hash SHA-256 da senha
-com o hash embutido no site. A carteira correspondente é renderizada com os mesmos
-cards do app (posição atual, proventos, rentabilidade, tabela de posições etc.).
+guardados em `client_info.csv` (colunas `Login Gorila` / `Senha Gorila`).
 
-> ⚠️ **Importante:** por ser um site 100% estático, os dados das carteiras ficam
-> embutidos no HTML e podem ser lidos por qualquer pessoa que inspecione o código
-> da página. Não use senhas de corretora reais para essa finalidade — recomenda-se
-> criar senhas de acesso específicas para o site ou migrar para autenticação com
-> servidor no futuro.
+**Esquema zero-knowledge:** os dados de cada cliente são criptografados com
+**AES-256-GCM** usando uma chave derivada da senha via **PBKDF2-SHA256** (150 mil
+iterações). O `data.json` público contém apenas o *ciphertext* (mais o login e o
+*salt* — o login é necessário para o cliente se identificar). Nenhuma chave é
+embutida no site: a senha digitada no login vira a chave de descriptografia no
+navegador (Web Crypto). Senha correta → carteira aparece; senha errada → nada.
+
+## Segurança
+
+> ✅ **Confidencialidade:** mesmo quem baixe o `data.json` ou inspecione o HTML vê
+> apenas criptografia — é impossível ler a carteira sem a senha do cliente.
+>
+> ⚠️ **Limitações a conhecer:**
+> - O **login** (e-mail do cliente) fica em texto claro no arquivo — é a chave que
+>   o cliente usa para se identificar.
+> - As **projeções** (`projections_master.csv`) usadas no gráfico de estimativas
+>   ficam em texto claro — são análises por ticker, não dados de carteira.
+> - Autenticação 100% client-side é ofuscação: qualquer pessoa com a senha correta
+>   acessa a carteira. Use senhas de acesso específicas para o site, nunca as senhas
+>   reais da corretora.
 
 ## DNS
 

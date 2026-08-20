@@ -6,8 +6,11 @@
  * partículas de fundo). Nenhuma chamada externa: os dados são
  * embutidos no HTML pelo build (window.DECO_SITE_DATA).
  *
- * Autenticação 100% local: compara SHA-256 da senha digitada
- * com o hash embutido. Sem envio de dados para servidores.
+ * Autenticação 100% local e ZERO-KNOWLEDGE: os dados de cada
+ * cliente estão CRIPTOGRAFADOS (AES-256-GCM) com uma chave derivada
+ * da senha (PBKDF2-SHA256). O site nunca armazena senha nem dados em
+ * texto puro; a senha digitada vira a chave de descriptografia.
+ * Requer HTTPS (GitHub Pages provê). Nenhum dado sai do navegador.
  * ============================================================ */
 (function () {
   'use strict';
@@ -19,92 +22,13 @@
   var currentClient = null;
 
   /* ----------------------------------------------------------
-   * SHA-256 (fallback puro em JS para file://; em https o
-   * navegador usa crypto.subtle).
+   * Descriptografia zero-knowledge (PBKDF2-SHA256 + AES-256-GCM)
+   *
+   * A senha digitada vira a chave de descriptografia no navegador
+   * via Web Crypto (crypto.subtle). Nenhuma chave está embutida no
+   * site. Exige contexto seguro (HTTPS) — o domínio custom do
+   * GitHub Pages provê.
    * ---------------------------------------------------------- */
-  function sha256hexFallback(ascii) {
-    function rightRotate(value, amount) {
-      return (value >>> amount) | (value << (32 - amount));
-    }
-    var mathPow = Math.pow;
-    var maxWord = mathPow(2, 32);
-    var lengthProperty = 'length';
-    var i, j;
-    var result = '';
-
-    var words = [];
-    var asciiBitLength = ascii[lengthProperty] * 8;
-
-    var hash = (sha256hexFallback.h = sha256hexFallback.h || []);
-    var k = (sha256hexFallback.k = sha256hexFallback.k || []);
-    var primeCounter = k[lengthProperty];
-
-    var isComposite = {};
-    for (var candidate = 2; primeCounter < 64; candidate++) {
-      if (!isComposite[candidate]) {
-        for (i = 0; i < 313; i += candidate) {
-          isComposite[i] = candidate;
-        }
-        hash[primeCounter] = (mathPow(candidate, 0.5) * maxWord) | 0;
-        k[primeCounter++] = (mathPow(candidate, 1 / 3) * maxWord) | 0;
-      }
-    }
-
-    ascii += '\x80';
-    while ((ascii[lengthProperty] % 64) - 56) ascii += '\x00';
-    for (i = 0; i < ascii[lengthProperty]; i++) {
-      j = ascii.charCodeAt(i);
-      if (j >> 8) return '';
-      words[i >> 2] |= j << (((3 - i) % 4) * 8);
-    }
-    words[words[lengthProperty]] = (asciiBitLength / maxWord) | 0;
-    words[words[lengthProperty]] = asciiBitLength;
-
-    for (j = 0; j < words[lengthProperty];) {
-      var w = words.slice(j, (j += 16));
-      var oldHash = hash;
-      hash = hash.slice(0, 8);
-
-      for (i = 0; i < 64; i++) {
-        var w15 = w[i - 15];
-        var w2 = w[i - 2];
-        var a = hash[0];
-        var e = hash[4];
-        var temp1 =
-          hash[7] +
-          (rightRotate(e, 6) ^ rightRotate(e, 11) ^ rightRotate(e, 25)) +
-          ((e & hash[5]) ^ (~e & hash[6])) +
-          k[i] +
-          (w[i] =
-            i < 16
-              ? w[i]
-              : (w[i - 16] +
-                  (rightRotate(w15, 7) ^ rightRotate(w15, 18) ^ (w15 >>> 3)) +
-                  w[i - 7] +
-                  (rightRotate(w2, 17) ^ rightRotate(w2, 19) ^ (w2 >>> 10))) |
-                0);
-        var temp2 =
-          (rightRotate(a, 2) ^ rightRotate(a, 13) ^ rightRotate(a, 22)) +
-          ((a & hash[1]) ^ (a & hash[2]) ^ (hash[1] & hash[2]));
-
-        hash = [(temp1 + temp2) | 0].concat(hash);
-        hash[4] = (hash[4] + temp1) | 0;
-      }
-
-      for (i = 0; i < 8; i++) {
-        hash[i] = (hash[i] + oldHash[i]) | 0;
-      }
-    }
-
-    for (i = 0; i < 8; i++) {
-      for (j = 3; j + 1; j--) {
-        var b = (hash[i] >> (j * 8)) & 255;
-        result += (b < 16 ? 0 : '') + b.toString(16);
-      }
-    }
-    return result;
-  }
-
   function toBytes(str) {
     var bytes = [];
     for (var i = 0; i < str.length; i++) {
@@ -124,21 +48,56 @@
     return new Uint8Array(bytes);
   }
 
-  function hashPassword(password) {
-    var raw = String(password || '');
-    if (window.crypto && window.crypto.subtle) {
-      return window.crypto.subtle
-        .digest('SHA-256', toBytes(raw))
-        .then(function (buffer) {
-          var hex = '';
-          var view = new Uint8Array(buffer);
-          for (var i = 0; i < view.length; i++) {
-            hex += (view[i] < 16 ? '0' : '') + view[i].toString(16);
-          }
-          return hex;
-        });
+  function b64ToBytes(b64) {
+    var binary = atob(b64);
+    var bytes = new Uint8Array(binary.length);
+    for (var i = 0; i < binary.length; i++) {
+      bytes[i] = binary.charCodeAt(i);
     }
-    return Promise.resolve(sha256hexFallback(raw));
+    return bytes;
+  }
+
+  function concatBytes(a, b) {
+    var out = new Uint8Array(a.length + b.length);
+    out.set(a, 0);
+    out.set(b, a.length);
+    return out;
+  }
+
+  function supportsSubtle() {
+    return !!(window.crypto && window.crypto.subtle);
+  }
+
+  function deriveAesKey(password, saltB64, iterations) {
+    return window.crypto.subtle
+      .importKey('raw', toBytes(String(password || '')), 'PBKDF2', false, ['deriveBits'])
+      .then(function (keyMaterial) {
+        return window.crypto.subtle.deriveBits(
+          { name: 'PBKDF2', hash: 'SHA-256', salt: b64ToBytes(saltB64), iterations: iterations },
+          keyMaterial,
+          256
+        );
+      })
+      .then(function (bits) {
+        return window.crypto.subtle.importKey('raw', bits, { name: 'AES-GCM' }, false, ['decrypt']);
+      });
+  }
+
+  function decryptClient(record, password) {
+    return deriveAesKey(password, record.salt, record.iterations).then(function (key) {
+      var iv = b64ToBytes(record.iv);
+      var tag = b64ToBytes(record.tag);
+      var ciphertext = b64ToBytes(record.ciphertext);
+      return window.crypto.subtle
+        .decrypt(
+          { name: 'AES-GCM', iv: iv, tagLength: 128 },
+          key,
+          concatBytes(ciphertext, tag)
+        )
+        .then(function (buffer) {
+          return JSON.parse(new TextDecoder().decode(buffer));
+        });
+    });
   }
 
   /* ----------------------------------------------------------
@@ -953,9 +912,11 @@
     modal.classList.remove('flex');
   }
 
-  function showLoginError() {
+  function showLoginError(message) {
     var error = document.getElementById('login-error');
-    if (error) error.classList.remove('hidden');
+    if (!error) return;
+    error.textContent = message || 'Usuário ou senha inválidos.';
+    error.classList.remove('hidden');
   }
 
   function logoutClient() {
@@ -975,48 +936,35 @@
   async function loginUser(username, password) {
     var normalized = String(username || '').trim();
     if (!normalized || !password) {
-      showLoginError();
+      showLoginError('Informe usuário e senha.');
       return false;
     }
-    var client = null;
+    if (!supportsSubtle()) {
+      showLoginError('O login exige HTTPS. Abra o site pelo domínio www.decoinvestimentos.com.br.');
+      return false;
+    }
+    var record = null;
     for (var i = 0; i < CLIENTS.length; i++) {
       if (String(CLIENTS[i].login || '').trim().toLowerCase() === normalized.toLowerCase()) {
-        client = CLIENTS[i];
+        record = CLIENTS[i];
         break;
       }
     }
-    if (!client) {
-      showLoginError();
+    if (!record) {
+      showLoginError('Usuário ou senha inválidos.');
       return false;
     }
-    var hash = await hashPassword(password);
-    if (hash !== client.passwordHash) {
-      showLoginError();
-      return false;
-    }
-    currentClient = client;
-    try { sessionStorage.setItem('deco_site_session', client.id + ':' + client.folder); } catch (e) {}
-    closeLoginModal();
-    setHeaderButtonLabel(client.name);
-    renderPortfolio(client);
-    return true;
-  }
-
-  function restoreSession() {
     try {
-      var session = sessionStorage.getItem('deco_site_session');
-      if (!session) return;
-      var parts = session.split(':');
-      var id = parts[0];
-      for (var i = 0; i < CLIENTS.length; i++) {
-        if (CLIENTS[i].id === id) {
-          currentClient = CLIENTS[i];
-          setHeaderButtonLabel(CLIENTS[i].name);
-          renderPortfolio(CLIENTS[i]);
-          return;
-        }
-      }
-    } catch (e) {}
+      var client = await decryptClient(record, password);
+      currentClient = client;
+      closeLoginModal();
+      setHeaderButtonLabel(client.name || normalized);
+      renderPortfolio(client);
+      return true;
+    } catch (err) {
+      showLoginError('Usuário ou senha inválidos.');
+      return false;
+    }
   }
 
   /* ----------------------------------------------------------
@@ -1051,8 +999,6 @@
         if (currentClient) renderPortfolio(currentClient);
       });
     }
-
-    restoreSession();
   }
 
   if (document.readyState === 'loading') {
