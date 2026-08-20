@@ -289,6 +289,157 @@
   }
 
   /* ----------------------------------------------------------
+   * Hover nos gráficos (tooltips + realces, padrão do app)
+   * ---------------------------------------------------------- */
+  var CHART_STATE = {};
+  var chartTip = null;
+
+  function getChartTip() {
+    if (!chartTip) {
+      chartTip = document.createElement('div');
+      chartTip.className = 'deco-chart-tooltip';
+      chartTip.style.display = 'none';
+      document.body.appendChild(chartTip);
+    }
+    return chartTip;
+  }
+
+  function showChartTip(html, e) {
+    var tip = getChartTip();
+    tip.innerHTML = html;
+    tip.style.display = 'block';
+    var pad = 14;
+    var x = e.clientX + pad;
+    var y = e.clientY + pad;
+    var r = tip.getBoundingClientRect();
+    if (x + r.width > window.innerWidth - pad) x = e.clientX - r.width - pad;
+    if (y + r.height > window.innerHeight - pad) y = e.clientY - r.height - pad;
+    tip.style.left = x + 'px';
+    tip.style.top = y + 'px';
+  }
+
+  function hideChartTip() {
+    if (chartTip) chartTip.style.display = 'none';
+  }
+
+  function donutTipHtml(item) {
+    if (item.children && item.children.length) {
+      var list = item.children.map(function (c) {
+        return '<li class="text-slate-500 dark:text-slate-400"><span class="font-semibold text-slate-700 dark:text-slate-200">' + escapeHtml(c.symbol) + '</span> · ' + fmtCurrency(c.value) + ' (' + fmtPct(c.percent, 2) + ')</li>';
+      }).join('');
+      return '<p class="mb-1.5 font-semibold">Outros</p><ul class="space-y-1">' + list +
+        '<li class="border-t border-slate-200 dark:border-slate-700 mt-1 pt-1"><span class="font-semibold">Total:</span> <span class="text-slate-500 dark:text-slate-400">' + fmtCurrency(item.value) + ' (' + fmtPct(item.percent, 2) + ')</span></li>' +
+      '</ul>';
+    }
+    return '<p class="mb-1.5 font-semibold">' + escapeHtml(item.symbol) + '</p>' +
+      '<ul class="space-y-0.5">' +
+        '<li class="flex items-center justify-between gap-4"><span class="text-slate-500 dark:text-slate-400">Valor</span><span class="font-semibold tabular-nums">' + fmtCurrency(item.value) + '</span></li>' +
+        '<li class="flex items-center justify-between gap-4"><span class="text-slate-500 dark:text-slate-400">Peso</span><span class="font-semibold tabular-nums">' + fmtPct(item.percent, 2) + '</span></li>' +
+        '<li class="flex items-center justify-between gap-4"><span class="text-slate-500 dark:text-slate-400">Quantidade</span><span class="font-semibold tabular-nums">' + (isNumeric(item.quantity) ? num0.format(item.quantity) : '—') + '</span></li>' +
+      '</ul>';
+  }
+
+  function estimatesTipHtml(pt) {
+    return '<p class="mb-1.5 font-semibold">' + escapeHtml(pt.label) + '</p>' +
+      '<p class="text-slate-500 dark:text-slate-400">' + (pt.isEstimate ? 'Estimado' : 'Recebido') + '</p>' +
+      '<p class="mt-1 font-semibold tabular-nums">' + fmtCurrency(pt.value) + '</p>';
+  }
+
+  function dailyTipHtml(p) {
+    var cdiRow = '';
+    if (isFinite(p.cdi)) {
+      cdiRow = '<li class="flex items-center gap-2"><span class="w-2 h-2 rounded-full shrink-0" style="background:#94a3b8"></span><span class="text-slate-500 dark:text-slate-400">CDI</span><span class="ms-auto font-semibold tabular-nums">' + fmtPct(p.cdi / 100) + '</span></li>';
+    }
+    return '<p class="mb-1.5 font-semibold">' + escapeHtml(p.date) + '</p>' +
+      '<ul class="space-y-1">' +
+        '<li class="flex items-center gap-2"><span class="w-2 h-2 rounded-full shrink-0" style="background:#72becf"></span><span class="text-slate-500 dark:text-slate-400">TWR</span><span class="ms-auto font-semibold tabular-nums">' + fmtPct(p.twr / 100) + '</span></li>' +
+        cdiRow +
+      '</ul>';
+  }
+
+  function clearChartCursors(mount) {
+    var g = mount.querySelector('#deco-daily-cursor');
+    if (g) g.innerHTML = '';
+    var bars = mount.querySelectorAll('.deco-bar-hover');
+    for (var i = 0; i < bars.length; i++) bars[i].classList.remove('deco-bar-hover');
+  }
+
+  function setBarHover(mount, el) {
+    var bars = mount.querySelectorAll('.deco-bar-hover');
+    for (var i = 0; i < bars.length; i++) {
+      if (bars[i] !== el) bars[i].classList.remove('deco-bar-hover');
+    }
+    el.classList.add('deco-bar-hover');
+  }
+
+  function handleDailyHover(mount, e) {
+    var state = CHART_STATE.daily;
+    var svgEl = mount.querySelector('[data-chart="daily"]');
+    if (!state || !svgEl) return;
+    var rect = svgEl.getBoundingClientRect();
+    if (!rect.width) return;
+    var fx = (e.clientX - rect.left) / rect.width;
+    fx = Math.max(0, Math.min(1, fx));
+    var idx = Math.round(fx * (state.points.length - 1));
+    if (idx < 0 || idx >= state.points.length) return;
+    var pt = state.points[idx];
+    var g = mount.querySelector('#deco-daily-cursor');
+    if (!g) return;
+    var cx = state.points.length > 1 ? (idx / (state.points.length - 1)) * state.W : 0;
+    var dots = '';
+    var twrCoord = state.coordsTWR[idx];
+    var cdiCoord = state.coordsCDI[idx];
+    if (twrCoord) dots += '<circle cx="' + twrCoord.x.toFixed(1) + '" cy="' + twrCoord.y.toFixed(1) + '" r="3.5" fill="#72becf" stroke="#061016" stroke-width="1"></circle>';
+    if (cdiCoord) dots += '<circle cx="' + cdiCoord.x.toFixed(1) + '" cy="' + cdiCoord.y.toFixed(1) + '" r="3" fill="#94a3b8" stroke="#061016" stroke-width="1"></circle>';
+    g.innerHTML =
+      '<line x1="' + cx.toFixed(1) + '" y1="0" x2="' + cx.toFixed(1) + '" y2="' + state.H + '" stroke="#94a3b8" stroke-opacity="0.6" stroke-width="1"></line>' +
+      dots;
+    showChartTip(dailyTipHtml(pt), e);
+  }
+
+  function handleChartHover(mount, e) {
+    var el = e.target && e.target.closest ? e.target.closest('[data-chart]') : null;
+    if (!el) {
+      clearChartCursors(mount);
+      hideChartTip();
+      return;
+    }
+    var chart = el.getAttribute('data-chart');
+    var idx = Number(el.getAttribute('data-index') || 0);
+    if (chart === 'donut') {
+      var item = (CHART_STATE.donut || {})[idx];
+      if (item) showChartTip(donutTipHtml(item), e);
+    } else if (chart === 'semiannual') {
+      var p = (CHART_STATE.semiannual || [])[idx];
+      if (p) {
+        showChartTip('<p class="font-semibold tabular-nums">' + fmtCurrency(p.total) + '</p>', e);
+        setBarHover(mount, el);
+      }
+    } else if (chart === 'estimates') {
+      var pt = (CHART_STATE.estimates || [])[idx];
+      if (pt) {
+        showChartTip(estimatesTipHtml(pt), e);
+        setBarHover(mount, el);
+      }
+    } else if (chart === 'daily') {
+      handleDailyHover(mount, e);
+    } else {
+      hideChartTip();
+    }
+  }
+
+  function onPortfolioMouseMove(e) {
+    var mount = document.getElementById('portfolio-view');
+    if (mount) handleChartHover(mount, e);
+  }
+
+  function onPortfolioMouseLeave() {
+    var mount = document.getElementById('portfolio-view');
+    if (mount) clearChartCursors(mount);
+    hideChartTip();
+  }
+
+  /* ----------------------------------------------------------
    * Posição Atual — donut de alocação (posicao_atual.csv)
    * ---------------------------------------------------------- */
   var DONUT_PALETTE = ['#f97316','#06b6d4','#3b82f6','#eab308','#ec4899','#14b8a6','#818cf8','#a78bfa','#34d399','#94a3b8'];
@@ -341,6 +492,7 @@
     if (!items.length) return card('Posição Atual', 'Nenhuma posição encontrada.', '<p class="text-xs dark:text-slate-300 text-slate-600">Execute o WF10 para carregar a carteira.</p>');
 
     var total = items.reduce(function (s, i) { return s + i.value; }, 0);
+    CHART_STATE.donut = items;
     var C = 2 * Math.PI * 45;
     var offset = 0;
     var segments = items.map(function (item, index) {
@@ -349,7 +501,8 @@
       var circle =
         '<circle cx="60" cy="60" r="45" fill="none" stroke="' + color + '" stroke-width="14" ' +
         'stroke-dasharray="' + segLen + ' ' + (C - segLen) + '" stroke-dashoffset="' + (-offset) + '" ' +
-        'class="animate-donut" style="animation-delay:' + (index * 0.15) + 's;"></circle>';
+        'data-chart="donut" data-index="' + index + '" ' +
+        'class="animate-donut" style="animation-delay:' + (index * 0.15) + 's; cursor:pointer;"></circle>';
       offset += segLen;
       return { item: item, color: color, circle: circle };
     });
@@ -421,13 +574,14 @@
 
     var current = currentSemester();
     var max = points.reduce(function (m, p) { return Math.max(m, p.total); }, 0) || 1;
-    var bars = points.map(function (p) {
+    CHART_STATE.semiannual = points;
+    var bars = points.map(function (p, index) {
       var isCurrent = p.semester === current;
       var height = Math.round((p.total / max) * 150);
       return (
-        '<div class="flex-1 flex flex-col items-center gap-1 z-10">' +
+        '<div class="flex-1 flex flex-col items-center gap-1 z-10 self-stretch justify-end rounded-t" data-chart="semiannual" data-index="' + index + '">' +
           '<span class="text-[9px] text-[#72becf] font-mono">' + fmtCompact(p.total) + '</span>' +
-          '<div class="w-full rounded-t animate-bar ' + (isCurrent ? 'bg-slate-500 shadow-lg' : 'bg-[#387b8d]') + '" style="height:' + Math.max(height, 6) + 'px; animation-delay:' + (points.indexOf(p) * 0.05) + 's;"></div>' +
+          '<div class="w-full rounded-t animate-bar ' + (isCurrent ? 'bg-slate-500 shadow-lg' : 'bg-[#387b8d]') + '" style="height:' + Math.max(height, 6) + 'px; animation-delay:' + (index * 0.05) + 's;"></div>' +
           '<span class="text-[9px] text-slate-400">' + semesterLabel(p.semester) + '</span>' +
         '</div>'
       );
@@ -514,13 +668,14 @@
     }
 
     var max = points.reduce(function (m, pt) { return Math.max(m, pt.value); }, 0) || 1;
-    var bars = points.map(function (pt) {
+    CHART_STATE.estimates = points;
+    var bars = points.map(function (pt, index) {
       var height = Math.round((pt.value / max) * 150);
       return (
-        '<div class="flex flex-col items-center gap-1 min-w-[26px]">' +
+        '<div class="flex flex-col items-center gap-1 min-w-[26px] self-stretch justify-end rounded-t" data-chart="estimates" data-index="' + index + '">' +
           '<span class="text-[8px] ' + (pt.isEstimate ? 'text-slate-400' : 'text-[#72becf]') + '">' + fmtCompact(pt.value) + '</span>' +
-          '<div class="w-4 rounded-t animate-bar ' + (pt.isEstimate ? 'bg-slate-500' : 'bg-[#387b8d]') + '" style="height:' + Math.max(height, 4) + 'px; animation-delay:' + (points.indexOf(pt) * 0.02) + 's;"></div>' +
-          '<span class="text-[8px] ' + (pt.isEstimate && points.indexOf(pt) === points.length - 1 ? 'text-white font-bold' : 'text-slate-400') + '">' + pt.label + '</span>' +
+          '<div class="w-4 rounded-t animate-bar ' + (pt.isEstimate ? 'bg-slate-500' : 'bg-[#387b8d]') + '" style="height:' + Math.max(height, 4) + 'px; animation-delay:' + (index * 0.02) + 's;"></div>' +
+          '<span class="text-[8px] ' + (pt.isEstimate && index === points.length - 1 ? 'text-white font-bold' : 'text-slate-400') + '">' + pt.label + '</span>' +
         '</div>'
       );
     }).join('');
@@ -576,6 +731,19 @@
     return d;
   }
 
+  function xyCoords(points, get, w, h, min, max) {
+    var span = (max - min) || 1;
+    var out = new Array(points.length);
+    for (var i = 0; i < points.length; i++) {
+      var v = get(points[i]);
+      if (!isFinite(v)) { out[i] = null; continue; }
+      var x = points.length > 1 ? (i / (points.length - 1)) * w : 0;
+      var y = h - 12 - ((v - min) / span) * (h - 30);
+      out[i] = { x: x, y: y };
+    }
+    return out;
+  }
+
   function axisDateLabel(date) {
     var m = /^(\d{4})-(\d{2})-(\d{2})/.exec(date || '');
     if (!m) return date;
@@ -596,6 +764,14 @@
     if (!isFinite(max)) max = 1;
     if (min === max) { min -= 1; max += 1; }
 
+    CHART_STATE.daily = {
+      points: points,
+      W: W,
+      H: H,
+      coordsTWR: xyCoords(points, function (p) { return p.twr; }, W, H, min, max),
+      coordsCDI: xyCoords(points, function (p) { return p.cdi; }, W, H, min, max),
+    };
+
     var dTWR = linePath(points, function (p) { return p.twr; }, W, H, min, max);
     var dCDI = linePath(points, function (p) { return p.cdi; }, W, H, min, max);
 
@@ -613,10 +789,11 @@
 
     var html =
       '<div class="relative h-64 w-full flex items-center justify-center pt-4">' +
-        '<svg class="w-full h-full overflow-visible" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none">' +
+        '<svg class="w-full h-full overflow-visible" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none" data-chart="daily">' +
           grid +
           '<path d="' + dCDI + '" fill="none" stroke="#94a3b8" stroke-width="2" stroke-dasharray="4 4" opacity="0.6"></path>' +
           '<path d="' + dTWR + '" fill="none" stroke="#72becf" stroke-width="3.5" class="animate-chart-line"></path>' +
+          '<g id="deco-daily-cursor"></g>' +
         '</svg>' +
       '</div>' +
       '<div class="flex justify-between items-center text-[10px] text-slate-400 mt-4 pt-3 border-t dark:border-slate-800/50">' + labels.join('') + '</div>';
@@ -802,7 +979,7 @@
 
     var head = POS_COLUMNS.map(function (col) {
       var arrow = posSort.column === col.key ? (posSort.direction === 'asc' ? ' ▲' : ' ▼') : '';
-      return '<th class="px-2 py-2 font-medium ' + (col.center ? 'text-center' : 'text-left') + ' cursor-pointer select-none whitespace-nowrap" data-sort="' + col.key + '">' + col.label + arrow + '</th>';
+      return '<th class="px-2 py-2 text-[11px] font-medium ' + (col.center ? 'text-center' : 'text-left') + ' cursor-pointer select-none whitespace-nowrap" data-sort="' + col.key + '">' + col.label + arrow + '</th>';
     }).join('');
 
     var body = rows.map(function (row) {
@@ -824,7 +1001,7 @@
               default: valueHtml = escapeHtml(raw == null ? '' : String(raw));
             }
           }
-          var extra = col.type === 'text' && col.key === 'description' ? ' text-[10px]' : ' text-xs';
+          var extra = col.type === 'text' && col.key === 'description' ? ' text-[10px]' : ' text-[11px]';
           return '<td class="px-2 py-2 whitespace-nowrap tabular-nums' + extra + (col.center ? ' text-center' : '') + '">' + valueHtml + '</td>';
         }).join('') +
       '</tr>';
@@ -832,7 +1009,7 @@
 
     var html =
       '<div class="overflow-x-auto">' +
-        '<table class="w-full min-w-[980px]">' +
+        '<table class="w-full min-w-[860px]">' +
           '<thead><tr class="border-b dark:border-slate-800/60 border-slate-200">' + head + '</tr></thead>' +
           '<tbody>' + body + '</tbody>' +
         '</table>' +
@@ -865,6 +1042,12 @@
     mount.classList.add('flex', 'flex-col');
 
     if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+
+    if (!mount.__chartsBound) {
+      mount.__chartsBound = true;
+      mount.addEventListener('mousemove', onPortfolioMouseMove);
+      mount.addEventListener('mouseleave', onPortfolioMouseLeave);
+    }
 
     var sortHead = mount.querySelectorAll('th[data-sort]');
     Array.prototype.forEach.call(sortHead, function (th) {

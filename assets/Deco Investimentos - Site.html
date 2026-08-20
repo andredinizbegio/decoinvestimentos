@@ -154,6 +154,37 @@
         .animate-donut {
             animation: donutSpin 1.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
+
+        /* Tooltip dos gráficos (padrão Recharts do app) */
+        .deco-chart-tooltip {
+            position: fixed;
+            z-index: 9999;
+            pointer-events: none;
+            border-radius: 0.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            background: rgba(255, 255, 255, 0.94);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            padding: 0.75rem;
+            font-size: 12px;
+            line-height: 1.4;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            max-width: 320px;
+        }
+        html.dark .deco-chart-tooltip {
+            border-color: rgba(56, 123, 141, 0.35);
+            background: rgba(11, 26, 32, 0.95);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Realce da banda da coluna ao passar o mouse nas barras */
+        .deco-bar-hover {
+            background: rgba(56, 123, 141, 0.14);
+            border-radius: 6px;
+        }
+        html.dark .deco-bar-hover {
+            background: rgba(148, 163, 184, 0.12);
+        }
     </style>
 </head>
 <body class="antialiased selection:bg-[#00598a] selection:text-white">
