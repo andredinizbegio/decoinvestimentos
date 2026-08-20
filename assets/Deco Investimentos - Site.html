@@ -1800,20 +1800,17 @@
             <button type="button" data-login-close class="absolute top-4 right-4 p-1 rounded-full dark:text-slate-400 text-slate-500 hover:bg-white/10 transition-colors" aria-label="Fechar">
                 <i data-lucide="x" class="w-5 h-5"></i>
             </button>
-            <div class="flex items-center gap-3 mb-6">
-                <span class="w-10 h-10 rounded-full bg-[#387b8d] text-white flex items-center justify-center font-bold text-sm">D.</span>
-                <div>
-                    <h3 class="text-lg font-bold dark:text-white text-slate-600 leading-tight">Área do Cliente</h3>
+            <div class="mb-6">
+                <h3 class="text-lg font-bold dark:text-white text-slate-600 leading-tight">Área do Cliente</h3>
                     <p class="text-[11px] dark:text-slate-400 text-slate-500">Acesse sua carteira acompanhada pelo Deco.</p>
                 </div>
-            </div>
             <form id="login-form" class="flex flex-col gap-4">
                 <label class="block">
-                    <span class="text-[10px] font-bold uppercase tracking-widest text-slate-400 block mb-2">USUÁRIO</span>
+                    <span class="text-[10px] font-bold uppercase tracking-widest text-slate-600 block mb-2">USUÁRIO</span>
                     <input id="login-user" type="text" autocomplete="username" placeholder="Seu e-mail de acesso" class="w-full px-4 py-3 rounded-2xl glass-card dark:text-white text-slate-600 border dark:border-[#387b8d]/25 border-slate-200 text-sm focus:outline-none focus:border-[#387b8d] transition-all shadow-inner placeholder:text-slate-500" />
                 </label>
                 <label class="block">
-                    <span class="text-[10px] font-bold uppercase tracking-widest text-slate-400 block mb-2">SENHA</span>
+                    <span class="text-[10px] font-bold uppercase tracking-widest text-slate-600 block mb-2">SENHA</span>
                     <input id="login-password" type="password" autocomplete="current-password" placeholder="Sua senha" class="w-full px-4 py-3 rounded-2xl glass-card dark:text-white text-slate-600 border dark:border-[#387b8d]/25 border-slate-200 text-sm focus:outline-none focus:border-[#387b8d] transition-all shadow-inner placeholder:text-slate-500" />
                 </label>
                 <p id="login-error" class="hidden text-xs text-red-500 dark:text-red-400 font-medium">Usuário ou senha inválidos.</p>
