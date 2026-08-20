@@ -494,16 +494,18 @@
     var total = items.reduce(function (s, i) { return s + i.value; }, 0);
     CHART_STATE.donut = items;
     var C = 2 * Math.PI * 45;
+    var GAP = 1.5;
+    var usable = Math.max(C - GAP * items.length, 1);
     var offset = 0;
     var segments = items.map(function (item, index) {
       var color = item.symbol === 'Outros' ? OTHERS_COLOR : DONUT_PALETTE[index % DONUT_PALETTE.length];
-      var segLen = Math.max(item.percent * C - 1.5, 1);
+      var segLen = Math.max(item.percent * usable, 1);
       var circle =
         '<circle cx="60" cy="60" r="45" fill="none" stroke="' + color + '" stroke-width="14" ' +
         'stroke-dasharray="' + segLen + ' ' + (C - segLen) + '" stroke-dashoffset="' + (-offset) + '" ' +
         'data-chart="donut" data-index="' + index + '" ' +
         'class="animate-donut" style="animation-delay:' + (index * 0.15) + 's; cursor:pointer;"></circle>';
-      offset += segLen;
+      offset += segLen + GAP;
       return { item: item, color: color, circle: circle };
     });
 
