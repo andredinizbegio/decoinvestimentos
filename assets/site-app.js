@@ -312,12 +312,12 @@
   function renderResume(client) {
     var r = client.resume || {};
     var fields = [
-      { label: 'PATRIMÔNIO (NAV)', icon: 'target', value: fmtCurrency(r.nav) },
-      { label: 'INVESTIDO', icon: 'layers', value: fmtCurrency(r.investedAmount) },
-      { label: 'RESULTADO', icon: 'trending-up', value: fmtCurrency(r.pnl) },
+      { label: 'PATRIMÔNIO (NAV)', icon: 'target', value: fmtCurrency0(r.nav) },
+      { label: 'INVESTIDO', icon: 'layers', value: fmtCurrency0(r.investedAmount) },
+      { label: 'RESULTADO', icon: 'trending-up', value: fmtCurrency0(r.pnl) },
       { label: 'TWR TOTAL', icon: 'award', value: fmtPct(r.twrTotal) },
       { label: 'IRR', icon: 'percent', value: fmtPct(r.irr) },
-      { label: 'PROVENTOS TOTAIS', icon: 'wallet', value: fmtCurrency(r.earningsTotal) },
+      { label: 'PROVENTOS TOTAIS', icon: 'wallet', value: fmtCurrency0(r.earningsTotal) },
     ].filter(function (f) {
       return f.value !== '—';
     });
@@ -332,8 +332,8 @@
               '<span class="text-sm font-extrabold text-[#72becf] tabular-nums whitespace-nowrap">' + f.value + '</span>' +
             '</div>' +
             '<div class="mt-2 flex flex-col gap-1.5 border-t border-slate-200 dark:border-slate-800/60 pt-2">' +
-              '<div class="flex items-center justify-between gap-3"><span class="text-[10px] text-slate-400 whitespace-nowrap">Média Últimos 12M (Real)</span><span class="text-[11px] font-semibold tabular-nums whitespace-nowrap">' + fmtCurrency(avgs.avgReal) + '</span></div>' +
-              '<div class="flex items-center justify-between gap-3"><span class="text-[10px] text-slate-400 whitespace-nowrap">Média Próximos 12M (Estimado)</span><span class="text-[11px] font-semibold tabular-nums whitespace-nowrap">' + fmtCurrency(avgs.avgEstimated) + '</span></div>' +
+              '<div class="flex items-center justify-between gap-3"><span class="text-[10px] text-slate-400 whitespace-nowrap">Média Últimos 12M (Real)</span><span class="text-[11px] font-semibold tabular-nums whitespace-nowrap">' + fmtCurrency0(avgs.avgReal) + '</span></div>' +
+              '<div class="flex items-center justify-between gap-3"><span class="text-[10px] text-slate-400 whitespace-nowrap">Média Próximos 12M (Estimado)</span><span class="text-[11px] font-semibold tabular-nums whitespace-nowrap">' + fmtCurrency0(avgs.avgEstimated) + '</span></div>' +
             '</div>' +
           '</div>'
         );
@@ -350,7 +350,7 @@
     }).join('');
 
     if (!html) return '';
-    return '<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">' + html + '</div>';
+    return '<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-4">' + html + '</div>';
   }
 
   /* ----------------------------------------------------------
