@@ -665,7 +665,7 @@
     }
 
     if (!client.position.length) {
-      return card('Estimativa de Dividendos Futuros', 'Dividendos recebidos nos últimos 12 meses e estimativas para os próximos 12 meses', '<p class="text-xs dark:text-slate-300 text-slate-600">Nenhuma posição encontrada.</p>');
+      return card('Histórico | Estimativa de Dividendos Futuros', 'Dividendos recebidos nos últimos 12 meses e estimativas para os próximos 12 meses', '<p class="text-xs dark:text-slate-300 text-slate-600">Nenhuma posição encontrada.</p>');
     }
 
     var max = points.reduce(function (m, pt) { return Math.max(m, pt.value); }, 0) || 1;
@@ -689,7 +689,7 @@
         '<span class="flex items-center gap-1.5"><span class="w-3 h-1 bg-[#387b8d] rounded-full"></span> Recebido</span>' +
         '<span class="flex items-center gap-1.5"><span class="w-3 h-1 bg-slate-500 rounded-full"></span> Estimado</span>' +
       '</div>';
-    return card('Estimativa de Dividendos Futuros', 'Dividendos recebidos nos últimos 12 meses e estimativas para os próximos 12 meses', html);
+    return card('Histórico | Estimativa de Dividendos Futuros', 'Dividendos recebidos nos últimos 12 meses e estimativas para os próximos 12 meses', html);
   }
 
   /* ----------------------------------------------------------
