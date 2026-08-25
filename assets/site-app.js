@@ -257,6 +257,56 @@
   }
 
   /* ----------------------------------------------------------
+   * Médias mensais de proventos (últimos 12M real / próximos 12M estimado)
+   * ---------------------------------------------------------- */
+  function monthlyAverages(client) {
+    var now = new Date();
+    var currentYear = now.getFullYear();
+    var currentMonth = now.getMonth();
+
+    var receivedByMonth = new Map();
+    for (var i = 0; i < client.dividends.length; i++) {
+      var row = client.dividends[i];
+      var key = (row.paymentDate || '').slice(0, 7);
+      if (!/^\d{4}-\d{2}$/.test(key)) continue;
+      receivedByMonth.set(key, (receivedByMonth.get(key) || 0) + (isNumeric(row.receivedValue) ? row.receivedValue : 0));
+    }
+    var sumLast12 = 0;
+    for (var offset = -12; offset < 0; offset++) {
+      var d = new Date(currentYear, currentMonth + offset, 1);
+      var k = d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2);
+      sumLast12 += receivedByMonth.get(k) || 0;
+    }
+
+    var monthByKey = new Map();
+    MONTHS_FULL.forEach(function (name, index) {
+      monthByKey.set(normalizeMonthName(name), index);
+    });
+    var estimatesByMonth = new Array(12).fill(0);
+    for (var j = 0; j < client.position.length; j++) {
+      var p = client.position[j];
+      var symbol = (p.symbol || '').trim();
+      var quantity = p.quantity;
+      if (!symbol || !isNumeric(quantity)) continue;
+      var valuation = PROJECTIONS[symbol] || {};
+      var perShare = valuation.dividendPerShare;
+      if (!isNumeric(perShare)) continue;
+      var months = valuation.months || [];
+      var percents = valuation.percents || [];
+      for (var x = 0; x < months.length; x++) {
+        var percent = percents[x];
+        if (!isNumeric(percent)) continue;
+        var monthIndex = monthByKey.get(normalizeMonthName(months[x]));
+        if (monthIndex === undefined) continue;
+        estimatesByMonth[monthIndex] += percent * perShare * quantity;
+      }
+    }
+    var sumNext12 = 0;
+    for (var m = 0; m < 12; m++) sumNext12 += estimatesByMonth[m];
+    return { avgReal: sumLast12 / 12, avgEstimated: sumNext12 / 12 };
+  }
+
+  /* ----------------------------------------------------------
    * Cards de resumo (resumo.json)
    * ---------------------------------------------------------- */
   function renderResume(client) {
@@ -272,7 +322,22 @@
       return f.value !== '—';
     });
 
+    var avgs = monthlyAverages(client);
     var html = fields.map(function (f) {
+      if (f.label === 'PROVENTOS TOTAIS') {
+        return (
+          '<div class="glass-card border rounded-2xl p-4 flex flex-col justify-between min-w-0 md:col-span-2">' +
+            '<div class="flex items-center justify-between gap-2 text-[10px] text-slate-400 uppercase tracking-wider">' +
+              '<span class="flex items-center gap-2"><i data-lucide="' + f.icon + '" class="w-3.5 h-3.5 text-[#72becf] shrink-0"></i><span class="truncate">' + f.label + '</span></span>' +
+              '<span class="text-sm font-extrabold text-[#72becf] tabular-nums whitespace-nowrap">' + f.value + '</span>' +
+            '</div>' +
+            '<div class="mt-2 flex flex-col gap-1.5 border-t border-slate-200 dark:border-slate-800/60 pt-2">' +
+              '<div class="flex items-center justify-between gap-3"><span class="text-[10px] text-slate-400 whitespace-nowrap">Média Últimos 12M (Real)</span><span class="text-[11px] font-semibold tabular-nums whitespace-nowrap">' + fmtCurrency(avgs.avgReal) + '</span></div>' +
+              '<div class="flex items-center justify-between gap-3"><span class="text-[10px] text-slate-400 whitespace-nowrap">Média Próximos 12M (Estimado)</span><span class="text-[11px] font-semibold tabular-nums whitespace-nowrap">' + fmtCurrency(avgs.avgEstimated) + '</span></div>' +
+            '</div>' +
+          '</div>'
+        );
+      }
       return (
         '<div class="glass-card border rounded-2xl p-4 flex flex-col justify-between min-w-0">' +
           '<div class="flex items-center gap-2 text-[10px] text-slate-400 uppercase tracking-wider">' +
@@ -350,10 +415,15 @@
     if (isFinite(p.cdi)) {
       cdiRow = '<li class="flex items-center gap-2"><span class="w-2 h-2 rounded-full shrink-0" style="background:#94a3b8"></span><span class="text-slate-500 dark:text-slate-400">CDI</span><span class="ms-auto font-semibold tabular-nums">' + fmtPct(p.cdi / 100) + '</span></li>';
     }
+    var navRow = '';
+    if (p.nav !== null && p.nav !== undefined && isFinite(p.nav)) {
+      navRow = '<li class="flex items-center gap-2"><span class="w-2 h-2 rounded-full shrink-0" style="background:#387b8d"></span><span class="text-slate-500 dark:text-slate-400">Patrimônio</span><span class="ms-auto font-semibold tabular-nums">' + fmtCurrency(p.nav) + '</span></li>';
+    }
     return '<p class="mb-1.5 font-semibold">' + escapeHtml(p.date) + '</p>' +
       '<ul class="space-y-1">' +
         '<li class="flex items-center gap-2"><span class="w-2 h-2 rounded-full shrink-0" style="background:#72becf"></span><span class="text-slate-500 dark:text-slate-400">TWR</span><span class="ms-auto font-semibold tabular-nums">' + fmtPct(p.twr / 100) + '</span></li>' +
         cdiRow +
+        navRow +
       '</ul>';
   }
 
@@ -705,12 +775,13 @@
         date: row.date,
         twr: row.twr * 100,
         cdi: isNumeric(row.cdi) ? row.cdi * 100 : NaN,
+        nav: isNumeric(row.nav) ? row.nav : null,
       });
     }
     var step = Math.ceil(pts.length / 320);
     var out = [];
     for (var k = 0; k < pts.length; k += step) out.push(pts[k]);
-    if (!out.length) out.push({ date: '', twr: 0, cdi: 0 });
+    if (!out.length) out.push({ date: '', twr: 0, cdi: 0, nav: null });
     return out;
   }
 
