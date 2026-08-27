@@ -327,9 +327,9 @@
       if (f.label === 'PROVENTOS TOTAIS') {
         return (
           '<div class="glass-card border rounded-2xl p-4 flex flex-col justify-between min-w-0 md:col-span-2">' +
-            '<div class="flex items-center justify-between gap-2 text-[10px] text-slate-400 uppercase tracking-wider">' +
+            '<div class="flex items-center justify-between gap-2 text-[10px] font-bold uppercase tracking-wider dark:text-white text-slate-600">' +
               '<span class="flex items-center gap-2"><i data-lucide="' + f.icon + '" class="w-3.5 h-3.5 text-[#72becf] shrink-0"></i><span class="truncate">' + f.label + '</span></span>' +
-              '<span class="text-sm font-extrabold text-[#72becf] tabular-nums whitespace-nowrap">' + f.value + '</span>' +
+              '<span class="text-sm font-extrabold text-[#00598a] dark:text-slate-200 tabular-nums whitespace-nowrap">' + f.value + '</span>' +
             '</div>' +
             '<div class="mt-2 flex flex-col gap-1.5 border-t border-slate-200 dark:border-slate-800/60 pt-2">' +
               '<div class="flex items-center justify-between gap-3"><span class="text-[10px] text-slate-400 whitespace-nowrap">Média Últimos 12M (Real)</span><span class="text-[11px] font-semibold tabular-nums whitespace-nowrap">' + fmtCurrency0(avgs.avgReal) + '</span></div>' +
@@ -340,17 +340,17 @@
       }
       return (
         '<div class="glass-card border rounded-2xl p-4 flex flex-col justify-between min-w-0">' +
-          '<div class="flex items-center gap-2 text-[10px] text-slate-400 uppercase tracking-wider">' +
+          '<div class="flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider dark:text-white text-slate-600">' +
             '<i data-lucide="' + f.icon + '" class="w-3.5 h-3.5 text-[#72becf] shrink-0"></i>' +
             '<span class="truncate">' + f.label + '</span>' +
           '</div>' +
-          '<div class="text-sm sm:text-base font-extrabold text-[#72becf] mt-2">' + f.value + '</div>' +
+          '<div class="text-sm sm:text-base font-extrabold text-[#00598a] dark:text-slate-200 mt-2">' + f.value + '</div>' +
         '</div>'
       );
     }).join('');
 
     if (!html) return '';
-    return '<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-4">' + html + '</div>';
+    return '<div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-7 gap-4">' + html + '</div>';
   }
 
   /* ----------------------------------------------------------
@@ -659,7 +659,7 @@
     }).join('');
 
     var html =
-      '<div class="h-48 flex items-end justify-between gap-1.5 pt-6 pb-2 px-2 border-b dark:border-slate-800/80 border-slate-200 relative overflow-x-auto">' +
+      '<div class="h-48 flex items-end justify-between gap-1.5 pt-6 pb-2 px-2 border-b dark:border-slate-800/80 border-slate-200 relative">' +
         bars +
       '</div>';
     return card('Proventos Semestrais', 'Dividendos recebidos agregados por semestre', html);
@@ -752,10 +752,10 @@
     }).join('');
 
     var html =
-      '<div class="h-48 flex items-end justify-between gap-1 pt-6 pb-2 px-1 relative border-b dark:border-slate-800/80 border-slate-200 overflow-x-auto min-w-full">' +
+      '<div class="h-48 flex items-end justify-between gap-1 pt-6 pb-2 px-1 relative border-b dark:border-slate-800/80 border-slate-200">' +
         bars +
       '</div>' +
-      '<div class="flex items-center gap-4 mt-4 text-[10px] text-slate-400 font-medium">' +
+      '<div class="flex items-center gap-4 mt-4 text-[10px] text-slate-600 dark:text-white font-medium">' +
         '<span class="flex items-center gap-1.5"><span class="w-3 h-1 bg-[#387b8d] rounded-full"></span> Recebido</span>' +
         '<span class="flex items-center gap-1.5"><span class="w-3 h-1 bg-slate-500 rounded-full"></span> Estimado</span>' +
       '</div>';
@@ -868,7 +868,7 @@
           '<g id="deco-daily-cursor"></g>' +
         '</svg>' +
       '</div>' +
-      '<div class="flex justify-between items-center text-[10px] text-slate-400 mt-4 pt-3 border-t dark:border-slate-800/50">' + labels.join('') + '</div>';
+      '<div class="flex justify-between items-center text-[10px] text-slate-600 dark:text-white mt-4 pt-3 border-t dark:border-slate-800/50">' + labels.join('') + '</div>';
 
     return card('Rentabilidade Diária', 'TWR acumulado da carteira vs CDI ao longo do tempo', html);
   }
