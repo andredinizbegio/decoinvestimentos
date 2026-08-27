@@ -209,7 +209,7 @@
   function renderHeader(client) {
     var updated = DATA.exportedAt ? formatDate(DATA.exportedAt) : '';
     return (
-      '<div class="mb-8">' +
+      '<div class="glass-card border rounded-3xl p-6 sm:p-8 mb-8">' +
         '<div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">' +
           '<div>' +
             '<span class="text-xs font-bold uppercase tracking-widest text-[#00598a] dark:text-[#72becf] block mb-2 font-mono">ÁREA DO CLIENTE</span>' +
@@ -870,9 +870,9 @@
 
     var badges =
       '<div class="flex flex-col md:flex-row md:flex-wrap gap-3 mb-3 text-xs">' +
-        '<span class="glass-card px-3 py-1.5 rounded-full border flex items-center gap-1.5 w-fit"><span class="text-slate-600 dark:text-slate-300">TWR Acumulado</span><strong class="tabular-nums text-green-700 dark:text-green-400">' + fmtRawPct(twrTotal) + '</strong></span>' +
-        (cdiTotal != null ? '<span class="glass-card px-3 py-1.5 rounded-full border flex items-center gap-1.5 w-fit"><span class="text-slate-600 dark:text-slate-300">CDI Acumulado</span><strong class="tabular-nums text-green-700 dark:text-green-400">' + fmtRawPct(cdiTotal) + '</strong></span>' : '') +
-        (vs != null ? '<span class="glass-card px-3 py-1.5 rounded-full border flex items-center gap-1.5 w-fit"><span class="text-slate-600 dark:text-slate-300">vs CDI</span><strong class="tabular-nums text-green-700 dark:text-green-400">' + vs.toLocaleString('pt-BR', { maximumFractionDigits: 1 }) + 'x</strong></span>' : '') +
+        '<span class="glass-card px-3 py-1.5 rounded-full border flex items-center gap-1.5 w-fit"><span class="text-slate-600 dark:text-slate-300">TWR Acumulado</span><strong class="tabular-nums text-[#00598a] dark:text-[#72becf]">' + fmtRawPct(twrTotal) + '</strong></span>' +
+        (cdiTotal != null ? '<span class="glass-card px-3 py-1.5 rounded-full border flex items-center gap-1.5 w-fit"><span class="text-slate-600 dark:text-slate-300">CDI Acumulado</span><strong class="tabular-nums text-[#94a3b8]">' + fmtRawPct(cdiTotal) + '</strong></span>' : '') +
+        (vs != null ? '<span class="glass-card px-3 py-1.5 rounded-full border flex items-center gap-1.5 w-fit"><span class="text-slate-600 dark:text-slate-300">vs CDI</span><strong class="tabular-nums text-[#00598a] dark:text-[#72becf]">' + vs.toLocaleString('pt-BR', { maximumFractionDigits: 1 }) + 'x</strong></span>' : '') +
       '</div>';
 
     var html =
@@ -966,8 +966,8 @@
       return '<td class="px-2 py-2 text-right whitespace-nowrap tabular-nums text-xs ' + cls + ' font-medium">' + (v >= 0 ? '+' : '') + fmtPct(v) + '</td>';
     }
     var valueHtml = fmtPct(v);
-    if (isMuted) valueHtml = '<span class="text-slate-400 dark:text-white">' + valueHtml + '</span>';
-    return '<td class="px-2 py-2 text-right whitespace-nowrap tabular-nums text-xs">' + valueHtml + '</td>';
+    if (isMuted) valueHtml = '<span class="text-slate-400 dark:text-slate-300">' + valueHtml + '</span>';
+    return '<td class="px-2 py-2 text-right whitespace-nowrap tabular-nums text-xs dark:text-white">' + valueHtml + '</td>';
   }
 
   function renderMonthly(client) {

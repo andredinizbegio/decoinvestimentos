@@ -1742,9 +1742,9 @@
 
             var html =
                 '<div class="flex flex-col md:flex-row md:flex-wrap gap-3 mb-3 text-xs">' +
-                    '<span class="glass-card px-3 py-1.5 rounded-full border flex items-center gap-1.5 w-fit"><span class="text-slate-600 dark:text-slate-300">TWR Acumulado</span><strong class="tabular-nums text-green-700 dark:text-green-400">' + fmtPct(twrTotal) + '</strong></span>' +
-                    (cdiTotal != null ? '<span class="glass-card px-3 py-1.5 rounded-full border flex items-center gap-1.5 w-fit"><span class="text-slate-600 dark:text-slate-300">CDI Acumulado</span><strong class="tabular-nums text-green-700 dark:text-green-400">' + fmtPct(cdiTotal) + '</strong></span>' : '') +
-                    (vs != null ? '<span class="glass-card px-3 py-1.5 rounded-full border flex items-center gap-1.5 w-fit"><span class="text-slate-600 dark:text-slate-300">vs CDI</span><strong class="tabular-nums text-green-700 dark:text-green-400">' + vs.toLocaleString('pt-BR', { maximumFractionDigits: 1 }) + 'x</strong></span>' : '') +
+                    '<span class="glass-card px-3 py-1.5 rounded-full border flex items-center gap-1.5 w-fit"><span class="text-slate-600 dark:text-slate-300">TWR Acumulado</span><strong class="tabular-nums text-[#00598a] dark:text-[#72becf]">' + fmtPct(twrTotal) + '</strong></span>' +
+                    (cdiTotal != null ? '<span class="glass-card px-3 py-1.5 rounded-full border flex items-center gap-1.5 w-fit"><span class="text-slate-600 dark:text-slate-300">CDI Acumulado</span><strong class="tabular-nums text-[#94a3b8]">' + fmtPct(cdiTotal) + '</strong></span>' : '') +
+                    (vs != null ? '<span class="glass-card px-3 py-1.5 rounded-full border flex items-center gap-1.5 w-fit"><span class="text-slate-600 dark:text-slate-300">vs CDI</span><strong class="tabular-nums text-[#00598a] dark:text-[#72becf]">' + vs.toLocaleString('pt-BR', { maximumFractionDigits: 1 }) + 'x</strong></span>' : '') +
                 '</div>' +
                 '<div class="relative h-64 w-full">' +
                     '<div class="absolute inset-y-0 right-12">' +
