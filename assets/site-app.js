@@ -328,12 +328,12 @@
         return (
           '<div class="glass-card border rounded-2xl p-4 flex flex-col justify-between min-w-0 md:col-span-2">' +
             '<div class="flex items-center justify-between gap-2 text-[10px] font-bold uppercase tracking-wider dark:text-white text-slate-600">' +
-              '<span class="flex items-center gap-2"><i data-lucide="' + f.icon + '" class="w-3.5 h-3.5 text-[#72becf] shrink-0"></i><span class="truncate">' + f.label + '</span></span>' +
+              '<span class="flex items-center gap-2"><i data-lucide="' + f.icon + '" class="w-3.5 h-3.5 text-[#00598a] dark:text-[#72becf] shrink-0"></i><span class="truncate">' + f.label + '</span></span>' +
               '<span class="text-sm font-extrabold text-[#00598a] dark:text-slate-200 tabular-nums whitespace-nowrap">' + f.value + '</span>' +
             '</div>' +
             '<div class="mt-2 flex flex-col gap-1.5 border-t border-slate-200 dark:border-slate-800/60 pt-2">' +
-              '<div class="flex items-center justify-between gap-3"><span class="text-[10px] text-slate-400 whitespace-nowrap">Média Últimos 12M (Real)</span><span class="text-[11px] font-semibold tabular-nums whitespace-nowrap">' + fmtCurrency0(avgs.avgReal) + '</span></div>' +
-              '<div class="flex items-center justify-between gap-3"><span class="text-[10px] text-slate-400 whitespace-nowrap">Média Próximos 12M (Estimado)</span><span class="text-[11px] font-semibold tabular-nums whitespace-nowrap">' + fmtCurrency0(avgs.avgEstimated) + '</span></div>' +
+              '<div class="flex items-center justify-between gap-3"><span class="text-[10px] text-slate-600 dark:text-slate-300 whitespace-nowrap">Média Últimos 12M (Real)</span><span class="text-[11px] font-semibold tabular-nums whitespace-nowrap text-slate-600 dark:text-slate-300">' + fmtCurrency0(avgs.avgReal) + '</span></div>' +
+              '<div class="flex items-center justify-between gap-3"><span class="text-[10px] text-slate-600 dark:text-slate-300 whitespace-nowrap">Média Próximos 12M (Estimado)</span><span class="text-[11px] font-semibold tabular-nums whitespace-nowrap text-slate-600 dark:text-slate-300">' + fmtCurrency0(avgs.avgEstimated) + '</span></div>' +
             '</div>' +
           '</div>'
         );
@@ -341,7 +341,7 @@
       return (
         '<div class="glass-card border rounded-2xl p-4 flex flex-col justify-between min-w-0">' +
           '<div class="flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider dark:text-white text-slate-600">' +
-            '<i data-lucide="' + f.icon + '" class="w-3.5 h-3.5 text-[#72becf] shrink-0"></i>' +
+            '<i data-lucide="' + f.icon + '" class="w-3.5 h-3.5 text-[#00598a] dark:text-[#72becf] shrink-0"></i>' +
             '<span class="truncate">' + f.label + '</span>' +
           '</div>' +
           '<div class="text-sm sm:text-base font-extrabold text-[#00598a] dark:text-slate-200 mt-2">' + f.value + '</div>' +
@@ -606,7 +606,7 @@
         '<div class="grid grid-cols-2 gap-x-4 gap-y-2 text-[11px] font-medium">' + legend + '</div>' +
       '</div>';
 
-    return card('Posição Atual', 'Alocação por ativo com base na posição atual da carteira · Total ' + fmtCurrency(total), html);
+    return card('Posição Atual', 'Alocação por ativo com base na posição atual da carteira<br>Total ' + fmtCurrency(total), html);
   }
 
   /* ----------------------------------------------------------
@@ -860,12 +860,32 @@
       labels.push('<span>' + escapeHtml(axisDateLabel(points[idx].date)) + '</span>');
     }
 
+    var last = points[points.length - 1];
+    var twrTotal = last.twr;
+    var cdiTotal = isFinite(last.cdi) ? last.cdi : null;
+    var vs = cdiTotal > 0 ? (twrTotal / cdiTotal) : null;
+    function fmtRawPct(v) {
+      return num2.format(v) + '%';
+    }
+
+    var badges =
+      '<div class="flex flex-col md:flex-row md:flex-wrap gap-3 mb-3 text-xs">' +
+        '<span class="glass-card px-3 py-1.5 rounded-full border flex items-center gap-1.5 w-fit"><span class="text-slate-600 dark:text-slate-300">TWR Acumulado</span><strong class="tabular-nums text-green-700 dark:text-green-400">' + fmtRawPct(twrTotal) + '</strong></span>' +
+        (cdiTotal != null ? '<span class="glass-card px-3 py-1.5 rounded-full border flex items-center gap-1.5 w-fit"><span class="text-slate-600 dark:text-slate-300">CDI Acumulado</span><strong class="tabular-nums text-green-700 dark:text-green-400">' + fmtRawPct(cdiTotal) + '</strong></span>' : '') +
+        (vs != null ? '<span class="glass-card px-3 py-1.5 rounded-full border flex items-center gap-1.5 w-fit"><span class="text-slate-600 dark:text-slate-300">vs CDI</span><strong class="tabular-nums text-green-700 dark:text-green-400">' + vs.toLocaleString('pt-BR', { maximumFractionDigits: 1 }) + 'x</strong></span>' : '') +
+      '</div>';
+
     var html =
+      '<div class="flex items-center gap-4 text-xs font-medium mb-3">' +
+        '<span class="flex items-center gap-1.5"><span class="w-3 h-1 bg-[#00598a] dark:bg-[#72becf] rounded-full"></span> Carteira Deco</span>' +
+        '<span class="flex items-center gap-1.5"><span class="w-3 h-1 bg-slate-500 rounded-full"></span> CDI Benchmark</span>' +
+      '</div>' +
+      badges +
       '<div class="relative h-64 w-full flex items-center justify-center pt-4">' +
         '<svg class="w-full h-full overflow-visible" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none" data-chart="daily">' +
           grid +
           '<path d="' + dCDI + '" fill="none" stroke="#94a3b8" stroke-width="2" stroke-dasharray="4 4" opacity="0.6"></path>' +
-          '<path d="' + dTWR + '" fill="none" stroke="#72becf" stroke-width="3.5" class="animate-chart-line"></path>' +
+          '<path d="' + dTWR + '" fill="none" stroke="#00598a" stroke-width="3.5" class="animate-chart-line deco-line-light"></path>' +
           '<g id="deco-daily-cursor"></g>' +
         '</svg>' +
       '</div>' +
@@ -946,7 +966,7 @@
       return '<td class="px-2 py-2 text-right whitespace-nowrap tabular-nums text-xs ' + cls + ' font-medium">' + (v >= 0 ? '+' : '') + fmtPct(v) + '</td>';
     }
     var valueHtml = fmtPct(v);
-    if (isMuted) valueHtml = '<span class="text-slate-400">' + valueHtml + '</span>';
+    if (isMuted) valueHtml = '<span class="text-slate-400 dark:text-white">' + valueHtml + '</span>';
     return '<td class="px-2 py-2 text-right whitespace-nowrap tabular-nums text-xs">' + valueHtml + '</td>';
   }
 
@@ -955,15 +975,15 @@
     if (!years.length) return card('Rentabilidade Mensal', 'Rentabilidade mensal da carteira versus CDI', '<p class="text-xs dark:text-slate-300 text-slate-600">Nenhum dado de rentabilidade mensal.</p>');
 
     var head =
-      '<th class="px-2 py-2 font-medium text-left text-[10px] uppercase tracking-wider dark:text-slate-400 text-slate-500">Indicador</th>' +
+      '<th class="px-2 py-2 font-medium text-left text-[10px] uppercase tracking-wider dark:text-white text-slate-500">Indicador</th>' +
       MONTHS_SHORT.map(function (m) {
-        return '<th class="px-2 py-2 text-right font-medium text-[10px] uppercase tracking-wider dark:text-slate-400 text-slate-500">' + m + '</th>';
+        return '<th class="px-2 py-2 text-right font-medium text-[10px] uppercase tracking-wider dark:text-white text-slate-500">' + m + '</th>';
       }).join('') +
-      '<th class="px-2 py-2 text-right font-medium text-[10px] uppercase tracking-wider dark:text-slate-400 text-slate-500">Total</th>';
+      '<th class="px-2 py-2 text-right font-medium text-[10px] uppercase tracking-wider dark:text-white text-slate-500">Total</th>';
 
     var body = years.map(function (year) {
       var rows =
-        '<tr class="border-b dark:border-slate-800/60 border-slate-200"><td colspan="14" class="px-2 pt-2 pb-1 text-xs font-semibold dark:text-slate-300 text-slate-500">' + year.year + '</td></tr>' +
+        '<tr class="border-b dark:border-slate-800/60 border-slate-200"><td colspan="14" class="px-2 pt-2 pb-1 text-xs font-semibold dark:text-white text-slate-500">' + year.year + '</td></tr>' +
         '<tr class="border-b dark:border-slate-800/60 border-slate-200"><td class="px-2 py-2 font-medium whitespace-nowrap text-xs">TWR</td>' +
           year.months.map(function (mo) { return cell(mo.twr, false, false); }).join('') + cell(year.twrTotal, false, false) + '</tr>' +
         '<tr class="border-b dark:border-slate-800/60 border-slate-200"><td class="px-2 py-2 font-medium whitespace-nowrap text-xs">CDI</td>' +
@@ -1052,7 +1072,7 @@
 
     var head = POS_COLUMNS.map(function (col) {
       var arrow = posSort.column === col.key ? (posSort.direction === 'asc' ? ' ▲' : ' ▼') : '';
-      return '<th class="px-2 py-2 text-[11px] font-medium ' + (col.center ? 'text-center' : 'text-left') + ' cursor-pointer select-none whitespace-nowrap" data-sort="' + col.key + '">' + col.label + arrow + '</th>';
+      return '<th class="px-2 py-2 text-[11px] font-medium dark:text-white text-slate-500 ' + (col.center ? 'text-center' : 'text-left') + ' cursor-pointer select-none whitespace-nowrap" data-sort="' + col.key + '">' + col.label + arrow + '</th>';
     }).join('');
 
     var body = rows.map(function (row) {
@@ -1075,7 +1095,7 @@
             }
           }
           var extra = col.type === 'text' && col.key === 'description' ? ' text-[10px]' : ' text-[11px]';
-          return '<td class="px-2 py-2 whitespace-nowrap tabular-nums' + extra + (col.center ? ' text-center' : '') + '">' + valueHtml + '</td>';
+          return '<td class="px-2 py-2 whitespace-nowrap tabular-nums dark:text-white text-slate-500' + extra + (col.center ? ' text-center' : '') + '">' + valueHtml + '</td>';
         }).join('') +
       '</tr>';
     }).join('');
@@ -1087,7 +1107,7 @@
           '<tbody>' + body + '</tbody>' +
         '</table>' +
       '</div>';
-    return card('Posição Atual Detalhada', 'Todas as posições da carteira com os dados do posicao_atual.csv', html);
+    return card('Posição Atual Detalhada', 'Todas as posições atuais da carteira', html);
   }
 
   /* ----------------------------------------------------------

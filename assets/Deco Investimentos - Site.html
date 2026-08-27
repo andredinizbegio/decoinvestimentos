@@ -177,6 +177,14 @@
             animation: donutSpin 1.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
+        /* Linha do gráfico de rentabilidade diária */
+        .deco-line-light {
+            stroke: #00598a !important;
+        }
+        html.dark .deco-line-light {
+            stroke: #72becf !important;
+        }
+
         /* Tooltip dos gráficos (padrão Recharts do app) */
         .deco-chart-tooltip {
             position: fixed;
@@ -574,7 +582,7 @@
                 <div class="glass-card border rounded-3xl p-6 sm:p-8 flex flex-col justify-between min-w-0">
                     <div>
                         <h3 class="text-lg font-bold dark:text-white text-slate-600 mb-1">Posição Atual</h3>
-                        <p class="text-[11px] dark:text-slate-400 text-slate-500 mb-6">Alocação por ativo com base na posição atual da carteira • Total <span class="deco-blur">R$ 3.372.769,67</span></p>
+                        <p class="text-[11px] dark:text-slate-400 text-slate-500 mb-6">Alocação por ativo com base na posição atual da carteira<br>Total <span class="deco-blur">R$ 3.372.769,67</span></p>
                     </div>
 
                     <div class="flex flex-col sm:flex-row items-center justify-center gap-6 my-4">
@@ -859,42 +867,42 @@
             <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
                 <div class="glass-card border rounded-2xl p-4 flex flex-col justify-between">
                     <div class="flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider dark:text-white text-slate-600">
-                        <i data-lucide="target" class="w-3.5 h-3.5 text-[#72becf] shrink-0"></i>
+                        <i data-lucide="target" class="w-3.5 h-3.5 text-[#00598a] dark:text-[#72becf] shrink-0"></i>
                         <span class="truncate">PATRIMÔNIO</span>
                     </div>
                     <div class="text-sm sm:text-base font-extrabold text-[#00598a] dark:text-slate-200 mt-2 deco-blur">R$ 3.372.770</div>
                 </div>
                 <div class="glass-card border rounded-2xl p-4 flex flex-col justify-between">
                     <div class="flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider dark:text-white text-slate-600">
-                        <i data-lucide="layers" class="w-3.5 h-3.5 text-[#72becf] shrink-0"></i>
+                        <i data-lucide="layers" class="w-3.5 h-3.5 text-[#00598a] dark:text-[#72becf] shrink-0"></i>
                         <span class="truncate">INVESTIDO</span>
                     </div>
                     <div class="text-sm sm:text-base font-extrabold text-[#00598a] dark:text-slate-200 mt-2 deco-blur">R$ 2.636.721</div>
                 </div>
                 <div class="glass-card border rounded-2xl p-4 flex flex-col justify-between">
                     <div class="flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider dark:text-white text-slate-600">
-                        <i data-lucide="trending-up" class="w-3.5 h-3.5 text-[#72becf] shrink-0"></i>
+                        <i data-lucide="trending-up" class="w-3.5 h-3.5 text-[#00598a] dark:text-[#72becf] shrink-0"></i>
                         <span class="truncate">RESULTADO</span>
                     </div>
                     <div class="text-sm sm:text-base font-extrabold text-[#00598a] dark:text-slate-200 mt-2 deco-blur">R$ 1.622.781</div>
                 </div>
                 <div class="glass-card border rounded-2xl p-4 flex flex-col justify-between">
                     <div class="flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider dark:text-white text-slate-600">
-                        <i data-lucide="award" class="w-3.5 h-3.5 text-[#72becf] shrink-0"></i>
+                        <i data-lucide="award" class="w-3.5 h-3.5 text-[#00598a] dark:text-[#72becf] shrink-0"></i>
                         <span class="truncate">TWR TOTAL</span>
                     </div>
                     <div class="text-sm sm:text-base font-extrabold text-[#00598a] dark:text-slate-200 mt-2">330,49%</div>
                 </div>
                 <div class="glass-card border rounded-2xl p-4 flex flex-col justify-between">
                     <div class="flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider dark:text-white text-slate-600">
-                        <i data-lucide="percent" class="w-3.5 h-3.5 text-[#72becf] shrink-0"></i>
+                        <i data-lucide="percent" class="w-3.5 h-3.5 text-[#00598a] dark:text-[#72becf] shrink-0"></i>
                         <span class="truncate">IRR</span>
                     </div>
                     <div class="text-sm sm:text-base font-extrabold text-[#00598a] dark:text-slate-200 mt-2">61,55%</div>
                 </div>
                 <div class="glass-card border rounded-2xl p-4 flex flex-col justify-between">
                     <div class="flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider dark:text-white text-slate-600">
-                        <i data-lucide="wallet" class="w-3.5 h-3.5 text-[#72becf] shrink-0"></i>
+                        <i data-lucide="wallet" class="w-3.5 h-3.5 text-[#00598a] dark:text-[#72becf] shrink-0"></i>
                         <span class="truncate">PROVENTOS</span>
                     </div>
                     <div class="text-sm sm:text-base font-extrabold text-[#00598a] dark:text-slate-200 mt-2 deco-blur">R$ 679.327</div>
@@ -903,20 +911,20 @@
 
             <!-- Gráfico Inferior: Rentabilidade Diária (TWR acumulado vs CDI) -->
             <div class="glass-card border rounded-3xl p-6 sm:p-8">
-                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-3">
                     <div>
                         <h3 class="text-lg font-bold dark:text-white text-slate-600 mb-1">Rentabilidade Diária Atual</h3>
                         <p class="text-[11px] dark:text-slate-400 text-slate-500">TWR acumulado da carteira vs CDI ao longo do tempo</p>
                         <p class="text-[11px] dark:text-slate-400 text-slate-500">Lembre-se sempre de que isto não garante rentabilidade futura.</p>
                     </div>
                     <div class="flex items-center gap-4 text-xs font-medium">
-                        <span class="flex items-center gap-1.5"><span class="w-3 h-1 bg-[#72becf] rounded-full"></span> Carteira Deco</span>
+                        <span class="flex items-center gap-1.5"><span class="w-3 h-1 bg-[#00598a] dark:bg-[#72becf] rounded-full"></span> Carteira Deco</span>
                         <span class="flex items-center gap-1.5"><span class="w-3 h-1 bg-slate-500 rounded-full"></span> CDI Benchmark</span>
                     </div>
                 </div>
 
                 <!-- Gráfico de Linha Real (dados da carteira de referência) -->
-                <div id="deco-public-daily" class="text-center text-xs text-slate-400 py-10"></div>
+                <div id="deco-public-daily" class="text-center text-xs text-slate-400 pt-2 pb-6"></div>
             </div>
 
             <!-- Rodapé Informativo da Seção -->
@@ -972,10 +980,10 @@
                     <div class="lg:col-span-7">
                         <div class="hero-ultra-glass border rounded-3xl p-6 sm:p-7 lg:p-8 relative overflow-hidden">
                             <div class="flex items-center justify-between gap-4 mb-2">
-                                <span class="text-xs font-medium uppercase tracking-widest text-slate-400">
+                                <span class="text-xs font-medium uppercase tracking-widest text-slate-600 dark:text-white">
                                     PRIMEIRA CONVERSA
                                 </span>
-                                <span class="text-xs sm:text-sm font-medium text-[#72becf] text-right">
+                                <span class="text-xs sm:text-sm font-medium text-green-700 dark:text-[#72becf] text-right">
                                     Seu trabalho → Seu patrimônio
                                 </span>
                             </div>
@@ -984,43 +992,43 @@
                                 Construir patrimônio previdenciário.
                             </h3>
 
-                            <p class="text-xs sm:text-sm dark:text-slate-300 text-slate-400 leading-relaxed mb-8 max-w-3xl">
+                            <p class="text-xs sm:text-sm dark:text-white text-slate-600 leading-relaxed mb-8 max-w-3xl">
                                 Atendemos clientes que querem construir, do zero, um patrimônio para o futuro, formado a partir do próprio trabalho duro. Você cuida da sua renda; nós ajudamos a transformar uma parte dela em patrimônio e renda passiva.
                             </p>
 
                             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
                                 <label class="block">
-                                    <span class="text-[10px] font-bold uppercase tracking-widest text-slate-400 block mb-2">RENDA MENSAL LÍQUIDA</span>
+                                    <span class="text-[10px] font-bold uppercase tracking-widest text-slate-600 dark:text-white block mb-2">RENDA MENSAL LÍQUIDA</span>
                                     <input type="text" id="contato-renda" inputmode="decimal" placeholder="R$ 0.000" aria-label="Renda mensal líquida" class="w-full px-4 py-3 rounded-2xl glass-card dark:text-white text-slate-600 border dark:border-[#387b8d]/25 border-slate-200 text-xs focus:outline-none focus:border-[#387b8d] transition-all shadow-inner placeholder:text-slate-500" />
                                 </label>
                                 <label class="block">
-                                    <span class="text-[10px] font-bold uppercase tracking-widest text-slate-400 block mb-2">PATRIMÔNIO ATUAL</span>
+                                    <span class="text-[10px] font-bold uppercase tracking-widest text-slate-600 dark:text-white block mb-2">PATRIMÔNIO ATUAL</span>
                                     <input type="text" id="contato-patrimonio" inputmode="decimal" placeholder="R$ 0.000" aria-label="Patrimônio atual" class="w-full px-4 py-3 rounded-2xl glass-card dark:text-white text-slate-600 border dark:border-[#387b8d]/25 border-slate-200 text-xs focus:outline-none focus:border-[#387b8d] transition-all shadow-inner placeholder:text-slate-500" />
                                 </label>
                                 <label class="block">
-                                    <span class="text-[10px] font-bold uppercase tracking-widest text-slate-400 block mb-2">CUSTO BÁSICO DE VIDA</span>
+                                    <span class="text-[10px] font-bold uppercase tracking-widest text-slate-600 dark:text-white block mb-2">CUSTO BÁSICO DE VIDA</span>
                                     <input type="text" id="contato-custo" inputmode="decimal" placeholder="R$ 0.000" aria-label="Custo básico de vida" class="w-full px-4 py-3 rounded-2xl glass-card dark:text-white text-slate-600 border dark:border-[#387b8d]/25 border-slate-200 text-xs focus:outline-none focus:border-[#387b8d] transition-all shadow-inner placeholder:text-slate-500" />
                                 </label>
                             </div>
 
                             <label class="block">
-                                <span class="text-[10px] font-bold uppercase tracking-widest text-slate-400 block mb-2">MEUS OBJETIVOS</span>
+                                <span class="text-[10px] font-bold uppercase tracking-widest text-slate-600 dark:text-white block mb-2">MEUS OBJETIVOS</span>
                                 <textarea id="contato-objetivos" rows="4" placeholder="Conte onde você quer chegar, o que deseja construir e o que gostaria que seu patrimônio proporcionasse no futuro." aria-label="Meus objetivos" class="w-full px-4 py-4 rounded-2xl glass-card dark:text-white text-slate-600 border dark:border-[#387b8d]/25 border-slate-200 text-xs leading-relaxed resize-none focus:outline-none focus:border-[#387b8d] transition-all shadow-inner placeholder:text-slate-500"></textarea>
                             </label>
 
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
                                 <label class="block">
-                                    <span class="text-[10px] font-bold uppercase tracking-widest text-slate-400 block mb-2">NOME</span>
+                                    <span class="text-[10px] font-bold uppercase tracking-widest text-slate-600 dark:text-white block mb-2">NOME</span>
                                     <input type="text" id="contato-nome" placeholder="Seu nome" aria-label="Nome" class="w-full px-4 py-3 rounded-2xl glass-card dark:text-white text-slate-600 border dark:border-[#387b8d]/25 border-slate-200 text-xs focus:outline-none focus:border-[#387b8d] transition-all shadow-inner placeholder:text-slate-500" />
                                 </label>
                                 <label class="block">
-                                    <span class="text-[10px] font-bold uppercase tracking-widest text-slate-400 block mb-2">EMAIL OU WHATSAPP</span>
+                                    <span class="text-[10px] font-bold uppercase tracking-widest text-slate-600 dark:text-white block mb-2">EMAIL OU WHATSAPP</span>
                                     <input type="text" id="contato-email-whatsapp" placeholder="seuemail@exemplo.com ou (11) 99999-9999" aria-label="Email ou WhatsApp" class="w-full px-4 py-3 rounded-2xl glass-card dark:text-white text-slate-600 border dark:border-[#387b8d]/25 border-slate-200 text-xs focus:outline-none focus:border-[#387b8d] transition-all shadow-inner placeholder:text-slate-500" />
                                 </label>
                             </div>
 
                             <div class="mt-7 pt-5 border-t dark:border-slate-800/60 border-slate-200/60 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                                <span class="text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
+                                <span class="text-[10px] sm:text-[11px] text-slate-600 dark:text-white leading-relaxed">
                                     Se fizer sentido para você, conversamos pessoalmente.
                                 </span>
                                 <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3 w-full sm:w-auto">
@@ -1733,17 +1741,17 @@
             var vs = cdiTotal > 0 ? (twrTotal / cdiTotal) : null;
 
             var html =
-                '<div class="flex flex-wrap gap-3 mb-3 text-xs">' +
-                    '<span class="glass-card px-3 py-1.5 rounded-full border flex items-center gap-1.5"><span class="text-slate-400">TWR Acumulado</span><strong class="tabular-nums text-[#387b8d]">' + fmtPct(twrTotal) + '</strong></span>' +
-                    (cdiTotal != null ? '<span class="glass-card px-3 py-1.5 rounded-full border flex items-center gap-1.5"><span class="text-slate-400">CDI Acumulado</span><strong class="tabular-nums text-slate-500">' + fmtPct(cdiTotal) + '</strong></span>' : '') +
-                    (vs != null ? '<span class="glass-card px-3 py-1.5 rounded-full border flex items-center gap-1.5"><span class="text-slate-400">vs CDI</span><strong class="tabular-nums text-[#387b8d]">' + vs.toLocaleString('pt-BR', { maximumFractionDigits: 1 }) + 'x</strong></span>' : '') +
+                '<div class="flex flex-col md:flex-row md:flex-wrap gap-3 mb-3 text-xs">' +
+                    '<span class="glass-card px-3 py-1.5 rounded-full border flex items-center gap-1.5 w-fit"><span class="text-slate-600 dark:text-slate-300">TWR Acumulado</span><strong class="tabular-nums text-green-700 dark:text-green-400">' + fmtPct(twrTotal) + '</strong></span>' +
+                    (cdiTotal != null ? '<span class="glass-card px-3 py-1.5 rounded-full border flex items-center gap-1.5 w-fit"><span class="text-slate-600 dark:text-slate-300">CDI Acumulado</span><strong class="tabular-nums text-green-700 dark:text-green-400">' + fmtPct(cdiTotal) + '</strong></span>' : '') +
+                    (vs != null ? '<span class="glass-card px-3 py-1.5 rounded-full border flex items-center gap-1.5 w-fit"><span class="text-slate-600 dark:text-slate-300">vs CDI</span><strong class="tabular-nums text-green-700 dark:text-green-400">' + vs.toLocaleString('pt-BR', { maximumFractionDigits: 1 }) + 'x</strong></span>' : '') +
                 '</div>' +
                 '<div class="relative h-64 w-full">' +
                     '<div class="absolute inset-y-0 right-12">' +
                         '<svg class="w-full h-full overflow-visible" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none" data-chart="daily-public">' +
                             grid +
                             '<path d="' + lineD(cdiC) + '" fill="none" stroke="#94a3b8" stroke-width="2" stroke-dasharray="4 4" opacity="0.6"></path>' +
-                            '<path d="' + lineD(twrC) + '" fill="none" stroke="#72becf" stroke-width="3.5" class="animate-chart-line"></path>' +
+                            '<path d="' + lineD(twrC) + '" fill="none" stroke="#00598a" stroke-width="3.5" class="animate-chart-line deco-line-light"></path>' +
                             '<g id="deco-public-daily-cursor"></g>' +
                         '</svg>' +
                     '</div>' +
