@@ -211,7 +211,9 @@
         /* Legendas de barras verticais (apenas mobile) */
         @media (max-width: 767px) {
             .deco-bar-label-v {
-                writing-mode: vertical-rl;
+                transform: rotate(90deg);
+                transform-origin: center;
+                white-space: nowrap;
                 line-height: 1;
                 margin-inline: auto;
             }
