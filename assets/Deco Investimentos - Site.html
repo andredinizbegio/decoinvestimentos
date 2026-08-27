@@ -211,11 +211,11 @@
         /* Legendas de barras verticais (apenas mobile) */
         @media (max-width: 767px) {
             .deco-bar-label-v {
-                transform: rotate(90deg);
-                transform-origin: center;
-                white-space: nowrap;
+                display: block;
+                height: 40px;
+                writing-mode: vertical-rl;
+                text-orientation: mixed;
                 line-height: 1;
-                margin-inline: auto;
             }
         }
     </style>
@@ -634,7 +634,7 @@
                     </div>
 
                     <!-- Visualizador de Barras Semestrais -->
-                    <div class="h-48 flex items-end justify-between gap-1.5 pt-6 pb-2 px-2 border-b dark:border-slate-800/80 border-slate-200 relative">
+                    <div class="h-64 md:h-48 flex items-end justify-between gap-1.5 pt-6 pb-2 px-2 border-b dark:border-slate-800/80 border-slate-200 relative">
                         <!-- Linhas de Grade de Fundo -->
                         <div class="absolute inset-x-0 top-0 border-t border-dashed dark:border-slate-800/60 border-slate-200 text-[9px] text-slate-400 pt-0.5 deco-blur">R$ 120k</div>
                         <div class="absolute inset-x-0 top-1/4 border-t border-dashed dark:border-slate-800/60 border-slate-200 text-[9px] text-slate-400 pt-0.5 deco-blur">R$ 90k</div>
@@ -729,7 +729,7 @@
                 <p class="text-[11px] dark:text-slate-400 text-slate-500 mb-6">Dividendos recebidos nos últimos 12 meses e estimativas para os próximos 12 meses</p>
 
                 <!-- Gráfico de Barras Mensais (Passado em azul, corrente e futuros em cinza) -->
-                <div class="h-44 flex items-end justify-between gap-1 pt-6 pb-2 px-1 relative border-b dark:border-slate-800/80 border-slate-200">
+                <div class="h-64 md:h-44 flex items-end justify-between gap-1 pt-6 pb-2 px-1 relative border-b dark:border-slate-800/80 border-slate-200">
                     <!-- Passado (Ago/25 a Fev/26 - azul) -->
                     <div class="flex-1 flex flex-col items-center gap-1 min-w-0">
                         <span class="text-[8px] text-[#72becf] deco-blur">R$ 25k</span>

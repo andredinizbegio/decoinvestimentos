@@ -659,7 +659,7 @@
     }).join('');
 
     var html =
-      '<div class="h-48 flex items-end justify-between gap-1.5 pt-6 pb-2 px-2 border-b dark:border-slate-800/80 border-slate-200 relative">' +
+      '<div class="h-64 md:h-48 flex items-end justify-between gap-1.5 pt-6 pb-2 px-2 border-b dark:border-slate-800/80 border-slate-200 relative">' +
         bars +
       '</div>';
     return card('Proventos Semestrais', 'Dividendos recebidos agregados por semestre', html);
@@ -753,7 +753,7 @@
     }).join('');
 
     var html =
-      '<div class="h-44 flex items-end justify-between gap-1 pt-6 pb-2 px-1 relative border-b dark:border-slate-800/80 border-slate-200">' +
+      '<div class="h-64 md:h-44 flex items-end justify-between gap-1 pt-6 pb-2 px-1 relative border-b dark:border-slate-800/80 border-slate-200">' +
         bars +
       '</div>' +
       '<div class="flex items-center gap-4 mt-4 text-[10px] text-slate-600 dark:text-white font-medium">' +
