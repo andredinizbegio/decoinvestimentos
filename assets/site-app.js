@@ -653,7 +653,7 @@
         '<div class="flex-1 flex flex-col items-center gap-1 z-10 self-stretch justify-end rounded-t" data-chart="semiannual" data-index="' + index + '">' +
           '<span class="text-[9px] text-[#72becf] font-mono">' + fmtCompact(p.total) + '</span>' +
           '<div class="w-full rounded-t animate-bar ' + (isCurrent ? 'bg-slate-500 shadow-lg' : 'bg-[#387b8d]') + '" style="height:' + Math.max(height, 6) + 'px; animation-delay:' + (index * 0.05) + 's;"></div>' +
-          '<span class="text-[9px] text-slate-400">' + semesterLabel(p.semester) + '</span>' +
+          '<span class="text-[9px] text-slate-600 dark:text-slate-300">' + semesterLabel(p.semester) + '</span>' +
         '</div>'
       );
     }).join('');
@@ -743,10 +743,10 @@
     var bars = points.map(function (pt, index) {
       var height = Math.round((pt.value / max) * 150);
       return (
-        '<div class="flex flex-col items-center gap-1 min-w-[26px] self-stretch justify-end rounded-t" data-chart="estimates" data-index="' + index + '">' +
+        '<div class="flex-1 flex flex-col items-center gap-1 self-stretch justify-end rounded-t min-w-0" data-chart="estimates" data-index="' + index + '">' +
           '<span class="text-[8px] ' + (pt.isEstimate ? 'text-slate-400' : 'text-[#72becf]') + '">' + fmtCompact(pt.value) + '</span>' +
-          '<div class="w-4 rounded-t animate-bar ' + (pt.isEstimate ? 'bg-slate-500' : 'bg-[#387b8d]') + '" style="height:' + Math.max(height, 4) + 'px; animation-delay:' + (index * 0.02) + 's;"></div>' +
-          '<span class="text-[8px] ' + (pt.isEstimate && index === points.length - 1 ? 'text-white font-bold' : 'text-slate-400') + '">' + pt.label + '</span>' +
+          '<div class="w-4 max-w-full rounded-t animate-bar ' + (pt.isEstimate ? 'bg-slate-500' : 'bg-[#387b8d]') + '" style="height:' + Math.max(height, 4) + 'px; animation-delay:' + (index * 0.02) + 's;"></div>' +
+          '<span class="text-[8px] ' + (pt.isEstimate && index === points.length - 1 ? 'text-white font-bold' : 'text-slate-600 dark:text-slate-300') + '">' + pt.label + '</span>' +
         '</div>'
       );
     }).join('');
