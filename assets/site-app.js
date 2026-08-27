@@ -653,7 +653,7 @@
         '<div class="flex-1 flex flex-col items-center gap-1 z-10 self-stretch justify-end rounded-t min-w-0" data-chart="semiannual" data-index="' + index + '">' +
           '<span class="text-[9px] text-[#72becf] font-mono">' + fmtCompact(p.total) + '</span>' +
           '<div class="w-full rounded-t animate-bar ' + (isCurrent ? 'bg-slate-500 shadow-lg' : 'bg-[#387b8d]') + '" style="height:' + Math.max(height, 6) + 'px; animation-delay:' + (index * 0.05) + 's;"></div>' +
-          '<span class="text-[9px] text-slate-600 dark:text-slate-300">' + semesterLabel(p.semester) + '</span>' +
+          '<span class="deco-bar-label-v text-[9px] text-slate-600 dark:text-slate-300">' + semesterLabel(p.semester) + '</span>' +
         '</div>'
       );
     }).join('');
@@ -744,16 +744,16 @@
     var bars = points.map(function (pt, index) {
       var height = Math.round((pt.value / max) * 150);
       return (
-        '<div class="flex-1 flex flex-col items-center gap-1 self-stretch justify-end rounded-t min-w-0" data-chart="estimates" data-index="' + index + '">' +
+        '<div class="flex-1 flex flex-col items-center gap-1 min-w-0" data-chart="estimates" data-index="' + index + '">' +
           '<span class="text-[8px] ' + (pt.isEstimate ? 'text-slate-400' : 'text-[#72becf]') + '">' + fmtCompact(pt.value) + '</span>' +
-          '<div class="w-2 md:w-4 max-w-full rounded-t animate-bar ' + (pt.isEstimate ? 'bg-slate-500' : 'bg-[#387b8d]') + '" style="height:' + Math.max(height, 4) + 'px; animation-delay:' + (index * 0.02) + 's;"></div>' +
+          '<div class="w-2 md:w-4 rounded-t animate-bar ' + (pt.isEstimate ? 'bg-slate-500' : 'bg-[#387b8d]') + '" style="height:' + Math.max(height, 4) + 'px; animation-delay:' + (index * 0.02) + 's;"></div>' +
           '<span class="deco-bar-label-v text-[8px] ' + (pt.isEstimate && index === points.length - 1 ? 'text-white font-bold' : 'text-slate-600 dark:text-slate-300') + '">' + pt.axisLabel + '</span>' +
         '</div>'
       );
     }).join('');
 
     var html =
-      '<div class="h-48 flex items-end justify-between gap-1 pt-6 pb-2 px-1 relative border-b dark:border-slate-800/80 border-slate-200">' +
+      '<div class="h-44 flex items-end justify-between gap-1 pt-6 pb-2 px-1 relative border-b dark:border-slate-800/80 border-slate-200">' +
         bars +
       '</div>' +
       '<div class="flex items-center gap-4 mt-4 text-[10px] text-slate-600 dark:text-white font-medium">' +
