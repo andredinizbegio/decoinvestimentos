@@ -964,15 +964,16 @@
     return years;
   }
 
-  function cell(v, isVs, isMuted) {
-    if (v === null || v === undefined) return '<td class="px-2 py-2 text-right whitespace-nowrap tabular-nums text-xs">—</td>';
+  function cell(v, isVs, isMuted, bold) {
+    var weight = bold ? ' font-bold' : '';
+    if (v === null || v === undefined) return '<td class="px-2 py-2 text-right whitespace-nowrap tabular-nums text-xs' + weight + '">—</td>';
     if (isVs) {
       var cls = v >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400';
-      return '<td class="px-2 py-2 text-right whitespace-nowrap tabular-nums text-xs ' + cls + ' font-medium">' + (v >= 0 ? '+' : '') + fmtPct(v) + '</td>';
+      return '<td class="px-2 py-2 text-right whitespace-nowrap tabular-nums text-xs ' + cls + ' font-medium' + weight + '">' + (v >= 0 ? '+' : '') + fmtPct(v) + '</td>';
     }
     var valueHtml = fmtPct(v);
-    if (isMuted) valueHtml = '<span class="text-slate-400 dark:text-slate-300">' + valueHtml + '</span>';
-    return '<td class="px-2 py-2 text-right whitespace-nowrap tabular-nums text-xs dark:text-white">' + valueHtml + '</td>';
+    if (isMuted) valueHtml = '<span class="text-slate-400 dark:text-slate-300' + weight + '">' + valueHtml + '</span>';
+    return '<td class="px-2 py-2 text-right whitespace-nowrap tabular-nums text-xs dark:text-white' + weight + '">' + valueHtml + '</td>';
   }
 
   function renderMonthly(client) {
@@ -984,17 +985,17 @@
       MONTHS_SHORT.map(function (m) {
         return '<th class="px-2 py-2 text-right font-medium text-[10px] uppercase tracking-wider dark:text-white text-slate-500">' + m + '</th>';
       }).join('') +
-      '<th class="px-2 py-2 text-right font-medium text-[10px] uppercase tracking-wider dark:text-white text-slate-500">Total</th>';
+      '<th class="px-2 py-2 text-right font-bold text-[10px] uppercase tracking-wider dark:text-white text-slate-500">Total</th>';
 
     var body = years.map(function (year) {
       var rows =
         '<tr class="border-b dark:border-slate-800/60 border-slate-200"><td colspan="14" class="px-2 pt-2 pb-1 text-xs font-semibold dark:text-white text-slate-500">' + year.year + '</td></tr>' +
-        '<tr class="border-b dark:border-slate-800/60 border-slate-200"><td class="px-2 py-2 font-medium whitespace-nowrap text-xs">TWR</td>' +
-          year.months.map(function (mo) { return cell(mo.twr, false, false); }).join('') + cell(year.twrTotal, false, false) + '</tr>' +
+        '<tr class="border-b dark:border-slate-800/60 border-slate-200"><td class="px-2 py-2 font-medium whitespace-nowrap text-xs">Retorno</td>' +
+          year.months.map(function (mo) { return cell(mo.twr, false, false); }).join('') + cell(year.twrTotal, false, false, true) + '</tr>' +
         '<tr class="border-b dark:border-slate-800/60 border-slate-200"><td class="px-2 py-2 font-medium whitespace-nowrap text-xs">CDI</td>' +
-          year.months.map(function (mo) { return cell(mo.cdi, false, true); }).join('') + cell(year.cdiTotal, false, true) + '</tr>' +
+          year.months.map(function (mo) { return cell(mo.cdi, false, true); }).join('') + cell(year.cdiTotal, false, true, true) + '</tr>' +
         '<tr class="border-b dark:border-slate-800/60 border-slate-200"><td class="px-2 py-2 font-medium whitespace-nowrap text-xs">vs CDI</td>' +
-          year.months.map(function (mo) { return cell(mo.vsCdi, true, false); }).join('') + cell(year.vsCdiTotal, true, false) + '</tr>';
+          year.months.map(function (mo) { return cell(mo.vsCdi, true, false); }).join('') + cell(year.vsCdiTotal, true, false, true) + '</tr>';
       return rows;
     }).join('');
 
