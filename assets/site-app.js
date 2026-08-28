@@ -153,11 +153,11 @@
     return isNumeric(v) ? num4.format(v) : '—';
   }
   function fmtCompact(v) {
-    if (!isNumeric(v)) return 'R$ 0';
+    if (!isNumeric(v)) return '0';
     var abs = Math.abs(v);
-    if (abs >= 1000000) return 'R$ ' + num0.format(v / 1000000) + 'MM';
-    if (abs >= 1000) return 'R$ ' + num0.format(v / 1000) + 'k';
-    return 'R$ ' + num0.format(v);
+    if (abs >= 1000000) return num0.format(v / 1000000) + 'MM';
+    if (abs >= 1000) return num0.format(v / 1000) + 'k';
+    return num0.format(v);
   }
   function fmtPlainNumber(v) {
     return isNumeric(v) ? num0.format(v) : '—';
@@ -741,7 +741,7 @@
     }
 
     if (!client.position.length) {
-      return card('Histórico | Estimativa de Dividendos Futuros', '', '<p class="text-xs dark:text-slate-300 text-slate-600">Nenhuma posição encontrada.</p>', '', 'Dividendos recebidos nos últimos 12 meses e estimativas para os próximos 12 meses');
+      return card('Histórico | Estimativa de Dividendos Futuros', '', '<p class="text-xs dark:text-slate-300 text-slate-600">Nenhuma posição encontrada.</p>');
     }
 
     var max = points.reduce(function (m, pt) { return Math.max(m, pt.value); }, 0) || 1;
@@ -758,14 +758,14 @@
     }).join('');
 
     var html =
-      '<div class="h-64 md:h-44 flex items-end justify-between gap-1 pt-6 pb-2 px-1 relative border-b dark:border-slate-800/80 border-slate-200">' +
-        bars +
-      '</div>' +
-      '<div class="flex items-center gap-4 mt-4 text-[10px] text-slate-600 dark:text-white font-medium">' +
+      '<div class="flex items-center gap-4 mb-3 text-[10px] text-slate-600 dark:text-white font-medium">' +
         '<span class="flex items-center gap-1.5"><span class="w-3 h-1 bg-[#387b8d] rounded-full"></span> Recebido</span>' +
         '<span class="flex items-center gap-1.5"><span class="w-3 h-1 bg-slate-500 rounded-full"></span> Estimado</span>' +
+      '</div>' +
+      '<div class="h-64 md:h-44 flex items-end justify-between gap-1 pt-6 pb-2 px-1 relative border-b dark:border-slate-800/80 border-slate-200">' +
+        bars +
       '</div>';
-    return card('Histórico | Estimativa de Dividendos Futuros', '', html, '', 'Dividendos recebidos nos últimos 12 meses e estimativas para os próximos 12 meses');
+    return card('Histórico | Estimativa de Dividendos Futuros', '', html);
   }
 
   /* ----------------------------------------------------------
