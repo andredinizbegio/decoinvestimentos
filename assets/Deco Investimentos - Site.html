@@ -1477,7 +1477,7 @@
             vertexColors: true,
             map: createParticleTexture(),
             transparent: true,
-            opacity: 0.85,
+            opacity: 0.3,
             blending: THREE.AdditiveBlending,
             depthWrite: false
         });
@@ -1489,10 +1489,10 @@
         function updateParticleTheme(isDark) {
             if (isDark) {
                 material.blending = THREE.AdditiveBlending;
-                material.opacity = 0.85;
+                material.opacity = 0.3;
             } else {
                 material.blending = THREE.NormalBlending;
-                material.opacity = 0.55;
+                material.opacity = 0.3;
             }
             material.needsUpdate = true;
         }
