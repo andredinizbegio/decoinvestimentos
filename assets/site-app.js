@@ -189,10 +189,15 @@
     return m[3] + '/' + m[2] + '/' + m[1];
   }
 
-  function card(title, subtitle, bodyHtml, extraClass) {
+  function card(title, subtitle, bodyHtml, extraClass, tooltip) {
+    var titleHtml = '<h3 class="text-lg font-bold dark:text-white text-slate-600 mb-1">' + title;
+    if (tooltip) {
+      titleHtml += ' <span class="deco-info-tip" tabindex="0" role="tooltip" data-tip="' + escapeHtml(tooltip) + '">?</span>';
+    }
+    titleHtml += '</h3>';
     return (
       '<div class="glass-card border rounded-3xl p-6 sm:p-8 min-w-0 ' + (extraClass || '') + '">' +
-        '<h3 class="text-lg font-bold dark:text-white text-slate-600 mb-1">' + title + '</h3>' +
+        titleHtml +
         (subtitle ? '<p class="text-[11px] dark:text-slate-400 text-slate-500 mb-6">' + subtitle + '</p>' : '') +
         bodyHtml +
       '</div>'
@@ -421,7 +426,7 @@
     }
     return '<p class="mb-1.5 font-semibold">' + escapeHtml(p.date) + '</p>' +
       '<ul class="space-y-1">' +
-        '<li class="flex items-center gap-2"><span class="w-2 h-2 rounded-full shrink-0" style="background:#72becf"></span><span class="text-slate-500 dark:text-slate-400">TWR</span><span class="ms-auto font-semibold tabular-nums">' + fmtPct(p.twr / 100) + '</span></li>' +
+        '<li class="flex items-center gap-2"><span class="w-2 h-2 rounded-full shrink-0" style="background:#72becf"></span><span class="text-slate-500 dark:text-slate-400">Retorno</span><span class="ms-auto font-semibold tabular-nums">' + fmtPct(p.twr / 100) + '</span></li>' +
         cdiRow +
         navRow +
       '</ul>';
@@ -606,7 +611,7 @@
         '<div class="grid grid-cols-2 gap-x-4 gap-y-2 text-[11px] font-medium">' + legend + '</div>' +
       '</div>';
 
-    return card('Posição Atual', 'Alocação por ativo com base na posição atual da carteira<br>Total ' + fmtCurrency(total), html);
+    return card('Posição Atual', 'Total ' + fmtCurrency(total), html);
   }
 
   /* ----------------------------------------------------------
@@ -641,7 +646,7 @@
     points.sort(function (a, b) { return a.semester.localeCompare(b.semester); });
     points = points.filter(function (p) { return p.semester <= currentSemester(); });
 
-    if (!points.length) return card('Proventos Semestrais', 'Dividendos recebidos agregados por semestre', '<p class="text-xs dark:text-slate-300 text-slate-600">Nenhum provento registrado.</p>');
+    if (!points.length) return card('Proventos Semestrais', '', '<p class="text-xs dark:text-slate-300 text-slate-600">Nenhum provento registrado.</p>');
 
     var current = currentSemester();
     var max = points.reduce(function (m, p) { return Math.max(m, p.total); }, 0) || 1;
@@ -662,7 +667,7 @@
       '<div class="h-64 md:h-48 flex items-end justify-between gap-1.5 pt-6 pb-2 px-2 border-b dark:border-slate-800/80 border-slate-200 relative">' +
         bars +
       '</div>';
-    return card('Proventos Semestrais', 'Dividendos recebidos agregados por semestre', html);
+    return card('Proventos Semestrais', '', html);
   }
 
   /* ----------------------------------------------------------
@@ -736,7 +741,7 @@
     }
 
     if (!client.position.length) {
-      return card('Histórico | Estimativa de Dividendos Futuros', 'Dividendos recebidos nos últimos 12 meses e estimativas para os próximos 12 meses', '<p class="text-xs dark:text-slate-300 text-slate-600">Nenhuma posição encontrada.</p>');
+      return card('Histórico | Estimativa de Dividendos Futuros', '', '<p class="text-xs dark:text-slate-300 text-slate-600">Nenhuma posição encontrada.</p>', '', 'Dividendos recebidos nos últimos 12 meses e estimativas para os próximos 12 meses');
     }
 
     var max = points.reduce(function (m, pt) { return Math.max(m, pt.value); }, 0) || 1;
@@ -760,7 +765,7 @@
         '<span class="flex items-center gap-1.5"><span class="w-3 h-1 bg-[#387b8d] rounded-full"></span> Recebido</span>' +
         '<span class="flex items-center gap-1.5"><span class="w-3 h-1 bg-slate-500 rounded-full"></span> Estimado</span>' +
       '</div>';
-    return card('Histórico | Estimativa de Dividendos Futuros', 'Dividendos recebidos nos últimos 12 meses e estimativas para os próximos 12 meses', html);
+    return card('Histórico | Estimativa de Dividendos Futuros', '', html, '', 'Dividendos recebidos nos últimos 12 meses e estimativas para os próximos 12 meses');
   }
 
   /* ----------------------------------------------------------
@@ -870,7 +875,7 @@
 
     var badges =
       '<div class="flex flex-col md:flex-row md:flex-wrap gap-3 mb-3 text-xs">' +
-        '<span class="glass-card px-3 py-1.5 rounded-full border flex items-center gap-1.5 w-fit"><span class="text-slate-600 dark:text-slate-300">TWR Acumulado</span><strong class="tabular-nums text-[#00598a] dark:text-[#72becf]">' + fmtRawPct(twrTotal) + '</strong></span>' +
+        '<span class="glass-card px-3 py-1.5 rounded-full border flex items-center gap-1.5 w-fit"><span class="text-slate-600 dark:text-slate-300">Retorno Acumulado</span><strong class="tabular-nums text-[#00598a] dark:text-[#72becf]">' + fmtRawPct(twrTotal) + '</strong></span>' +
         (cdiTotal != null ? '<span class="glass-card px-3 py-1.5 rounded-full border flex items-center gap-1.5 w-fit"><span class="text-slate-600 dark:text-slate-300">CDI Acumulado</span><strong class="tabular-nums text-[#94a3b8]">' + fmtRawPct(cdiTotal) + '</strong></span>' : '') +
         (vs != null ? '<span class="glass-card px-3 py-1.5 rounded-full border flex items-center gap-1.5 w-fit"><span class="text-slate-600 dark:text-slate-300">vs CDI</span><strong class="tabular-nums text-[#00598a] dark:text-[#72becf]">' + vs.toLocaleString('pt-BR', { maximumFractionDigits: 1 }) + 'x</strong></span>' : '') +
       '</div>';
@@ -891,7 +896,7 @@
       '</div>' +
       '<div class="flex justify-between items-center text-[10px] text-slate-600 dark:text-white mt-4 pt-3 border-t dark:border-slate-800/50">' + labels.join('') + '</div>';
 
-    return card('Rentabilidade Diária', 'TWR acumulado da carteira vs CDI ao longo do tempo', html);
+    return card('Rentabilidade Diária', '', html, '', 'Retorno medido pelo Retorno Ponderado no Tempo (Time-Weighted Return ou TWR).');
   }
 
   /* ----------------------------------------------------------
@@ -972,7 +977,7 @@
 
   function renderMonthly(client) {
     var years = monthlyYears(client);
-    if (!years.length) return card('Rentabilidade Mensal', 'Rentabilidade mensal da carteira versus CDI', '<p class="text-xs dark:text-slate-300 text-slate-600">Nenhum dado de rentabilidade mensal.</p>');
+    if (!years.length) return card('Rentabilidade Mensal', '', '<p class="text-xs dark:text-slate-300 text-slate-600">Nenhum dado de rentabilidade mensal.</p>');
 
     var head =
       '<th class="px-2 py-2 font-medium text-left text-[10px] uppercase tracking-wider dark:text-white text-slate-500">Indicador</th>' +
@@ -1000,7 +1005,7 @@
           '<tbody>' + body + '</tbody>' +
         '</table>' +
       '</div>';
-    return card('Rentabilidade Mensal', 'Rentabilidade mensal da carteira versus CDI, com o total de cada ano', html);
+    return card('Rentabilidade Mensal', '', html);
   }
 
   /* ----------------------------------------------------------
@@ -1107,7 +1112,7 @@
           '<tbody>' + body + '</tbody>' +
         '</table>' +
       '</div>';
-    return card('Posição Atual Detalhada', 'Todas as posições atuais da carteira', html);
+    return card('Posição Atual Detalhada', '', html);
   }
 
   /* ----------------------------------------------------------
