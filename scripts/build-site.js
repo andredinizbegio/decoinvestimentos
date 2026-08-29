@@ -22,6 +22,8 @@ const DATA_FILE = path.join(ROOT, 'site-data', 'data.json');
 const APP_FILE = path.join(ROOT, 'assets', 'site-app.js');
 const OUT_DIR = path.join(ROOT, 'docs');
 const OUT_FILE = path.join(OUT_DIR, 'index.html');
+const FUNDOS_SRC = path.join(ROOT, 'assets', 'fundos');
+const FUNDOS_DST = path.join(OUT_DIR, 'fundos');
 const CNAME = process.env.DECOAI_SITE_CNAME || 'www.decoinvestimentos.com.br';
 
 const DATA_MARKER = '/*__DECO_SITE_DATA__*/';
@@ -29,6 +31,20 @@ const APP_MARKER = '/*__DECO_SITE_APP__*/';
 
 function readText(filePath) {
   return fs.readFileSync(filePath, 'utf8').replace(/^\uFEFF/, '');
+}
+
+function copyDir(src, dst) {
+  if (!fs.existsSync(src)) return;
+  fs.mkdirSync(dst, { recursive: true });
+  for (const entry of fs.readdirSync(src)) {
+    const s = path.join(src, entry);
+    const d = path.join(dst, entry);
+    if (fs.statSync(s).isDirectory()) {
+      copyDir(s, d);
+    } else {
+      fs.copyFileSync(s, d);
+    }
+  }
 }
 
 function main() {
@@ -51,8 +67,11 @@ function main() {
   fs.writeFileSync(OUT_FILE, template, 'utf8');
   fs.writeFileSync(path.join(OUT_DIR, 'CNAME'), `${CNAME}\n`, 'utf8');
 
+  copyDir(FUNDOS_SRC, FUNDOS_DST);
+
   console.log(`site gerado -> ${OUT_FILE} (${template.length} bytes)`);
   console.log(`CNAME -> ${CNAME}`);
+  console.log(`fundos copiados -> ${FUNDOS_DST}`);
 }
 
 main();
