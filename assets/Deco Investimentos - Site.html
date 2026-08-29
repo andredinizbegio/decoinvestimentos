@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Deco Investimentos</title>
+    <title>Deco Investimentos · Versão 20</title>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='white'/><text x='50' y='70' font-family='Garamond,Georgia,serif' font-size='72' fill='%23888888' text-anchor='middle'>D</text></svg>" />
 
-    <!-- CDNs das Bibliotecas (Tailwind CSS, Lucide Icons, Three.js) -->
+    <!-- CDNs das Bibliotecas (Tailwind CSS, Lucide Icons) -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
     <!-- Google Fonts: Plus Jakarta Sans, Inter & EB Garamond -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -46,8 +45,7 @@
     <script>
         (function () {
             try {
-                var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-                document.documentElement.classList.toggle('dark', !!prefersDark);
+                document.documentElement.classList.add('dark');
             } catch (e) {}
         })();
     </script>
@@ -76,16 +74,69 @@
             color: #475569 !important;
         }
 
-        /* Canvas Three.js Fixo no fundo com z-index garantido */
-        #webgl-canvas {
-            position: fixed;
+        /* V20: fundo em parallax estilo Guepardo (background-attachment: fixed)
+           + overlay azul-marinho em multiply (#174C75 a 19%) */
+        #hero {
+            background-image: url('fundos/imagem1.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+        #hero::before {
+            content: '';
+            position: absolute;
             top: 0;
             left: 0;
-            width: 100vw;
-            height: 100vh;
+            right: 0;
+            bottom: 0;
+            background-color: #174C75;
+            mix-blend-mode: multiply;
+            opacity: 0.19;
             pointer-events: none;
+        }
+        #hero .max-w-7xl {
+            position: relative;
             z-index: 1;
-            transition: opacity 0.5s ease;
+        }
+
+        #metodologia {
+            position: relative;
+        }
+        #metodologia::before,
+        #metodologia::after {
+            content: '';
+            position: absolute;
+            z-index: 0;
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100vw;
+            pointer-events: none;
+        }
+        #metodologia::before {
+            background-image: url('fundos/imagem2.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+        #metodologia::after {
+            background-color: #174C75;
+            mix-blend-mode: multiply;
+            opacity: 0.19;
+        }
+        #metodologia > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        @media (max-width: 1024px) {
+            #hero,
+            #metodologia::before {
+                background-attachment: scroll;
+            }
         }
 
         header, main, footer {
@@ -283,9 +334,6 @@
 </head>
 <body class="antialiased selection:bg-[#00598a] selection:text-white">
 
-    <!-- CANVAS THREE.JS 3D PARALAX -->
-    <canvas id="webgl-canvas"></canvas>
-
     <header id="main-header" class="fixed top-0 left-0 right-0 z-50 px-4 lg:px-8 py-3.5 transition-all duration-300 border-b dark:bg-[#061016]/85 bg-white/80 dark:border-[#1e303a]/60 border-slate-200 backdrop-blur-md">
         <div class="max-w-7xl mx-auto flex items-center justify-between">
             <a href="#hero" onclick="scrollToSection('hero', 'sparkle')" class="font-garamond text-base sm:text-lg font-semibold tracking-wide dark:text-white text-slate-600 hover:opacity-80 transition-opacity flex items-center gap-2">
@@ -309,18 +357,10 @@
                 <button onclick="scrollToSection('blocos', 'decotext')" id="nav-avaliacao" class="nav-link text-xs sm:text-sm font-medium dark:text-slate-100 text-slate-600 dark:hover:text-white hover:text-slate-700">
                     Avaliação de Perfil
                 </button>
-                <a href="#contato" onclick="scrollToSection('contato', 'sparkle')" class="nav-link text-xs sm:text-sm font-medium dark:text-slate-100 text-slate-600 dark:hover:text-white hover:text-slate-700">
-                    Contato
-                </a>
             </nav>
 
-            <!-- AÇÕES, TEMA E LOGIN -->
+            <!-- AÇÕES E LOGIN -->
             <div class="flex items-center gap-3">
-                <button id="theme-toggle" class="p-2 rounded-full dark:bg-[#0f1d24] bg-slate-100 dark:text-amber-400 text-slate-600 border dark:border-[#1e303a] border-slate-200 hover:scale-105 transition-transform" aria-label="Alternar Tema">
-                    <i data-lucide="sun" class="w-4 h-4 hidden dark:block"></i>
-                    <i data-lucide="moon" class="w-4 h-4 block dark:hidden"></i>
-                </button>
-
                 <button id="login-btn" class="dark:bg-[#0f1d24] bg-slate-100 hover:opacity-80 text-slate-700 dark:text-white text-xs font-semibold px-4 py-2 rounded-full dark:border-[#1e303a] border border-slate-200 transition-all duration-300 shadow-sm">
                     Login
                 </button>
@@ -338,7 +378,6 @@
             <button onclick="scrollToSection('metodologia', 'rubik')" class="text-left text-xs font-medium dark:text-white text-slate-700 hover:text-[#387b8d]">Metodologia</button>
             <button onclick="scrollToSection('performance', 'barchart')" class="text-left text-xs font-medium dark:text-white text-slate-700 hover:text-[#387b8d]">Rentabilidade</button>
             <button onclick="scrollToSection('blocos', 'decotext')" class="text-left text-xs font-medium dark:text-white text-slate-700 hover:text-[#387b8d]">Avaliação de Perfil</button>
-            <a href="#contato" onclick="scrollToSection('contato', 'sparkle')" class="text-left text-xs font-medium dark:text-white text-slate-700 hover:text-[#387b8d]">Contato</a>
         </div>
     </header>
 
@@ -585,11 +624,8 @@
                         PRINCÍPIO CENTRAL
                     </span>
                     <h4 class="text-sm sm:text-base font-bold dark:text-white text-slate-600">
-                        Você decide. Nós estudamos. Seu dinheiro nunca passa pelas nossas mãos. Tem dúvidas sobre suas decisões financeiras? Nós aconselhamos.
+                        Você decide. Nós estudamos. Seu dinheiro nunca passa pelas nossas mãos. Tem dúvidas sobre suas decisões financeiras? <span class="font-garamond italic font-normal text-lg sm:text-xl text-[#00598a] dark:text-[#72becf]">Nós aconselhamos.</span>
                     </h4>
-                </div>
-                <div class="text-[#387b8d] dark:text-[#72becf] text-2xl font-mono shrink-0">
-                    &infin;
                 </div>
             </div>
         </section>
@@ -603,10 +639,10 @@
                         NOSSA CARTEIRA DE REFERÊNCIA
                     </span>
                     <h2 class="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight dark:text-white text-slate-600 leading-tight mb-2">
-                        Transparente.
+                        Uma visão clara.
                     </h2>
-                    <p class="font-garamond italic font-normal text-3xl sm:text-4xl text-[#00598a] dark:text-[#72becf] mb-6">
-                        Consistente.
+                    <p class="mb-6 text-3xl sm:text-4xl">
+                        <span class="text-slate-600 dark:text-slate-100">Cada investimento</span> <span class="font-garamond italic font-normal text-[#00598a] dark:text-[#72becf]">detalhado.</span>
                     </p>
                     <p class="text-xs sm:text-sm dark:text-slate-100 text-slate-600 max-w-2xl leading-relaxed">
                         Acompanhamento completo da carteira de referência, com dados consolidados, proventos e performance histórica. Tudo claro, tudo disponível.
@@ -940,7 +976,7 @@
                 <div class="glass-card border rounded-2xl p-4 flex flex-col justify-between">
                     <div class="flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider dark:text-white text-slate-600">
                         <i data-lucide="award" class="w-3.5 h-3.5 text-[#00598a] dark:text-[#72becf] shrink-0"></i>
-                        <span class="truncate">TWR TOTAL</span>
+                        <span class="truncate">RENTABILIDADE TOTAL</span>
                     </div>
                     <div class="text-sm sm:text-base font-extrabold text-[#00598a] dark:text-white mt-2">330,49%</div>
                 </div>
@@ -992,9 +1028,9 @@
                 <!-- Elemento decorativo de fundo preservado -->
                 <div class="absolute -top-24 -right-24 w-72 h-72 bg-[#387b8d]/10 rounded-full blur-3xl pointer-events-none"></div>
 
-                <div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
+                <div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-start">
                     <!-- Lado esquerdo: posicionamento da conversa -->
-                    <div class="lg:col-span-5 text-left">
+                    <div class="lg:col-span-5 text-left lg:pt-8">
                         <span class="text-xs font-bold uppercase tracking-widest text-[#00598a] dark:text-[#72becf] block mb-3 font-mono">
                             AVALIAÇÃO DE PERFIL
                         </span>
@@ -1033,7 +1069,7 @@
                                 <span class="text-xs font-medium uppercase tracking-widest text-slate-600 dark:text-white">
                                     PRIMEIRA CONVERSA
                                 </span>
-                                <span class="text-xs sm:text-sm font-medium text-green-700 dark:text-[#72becf] text-right">
+                                <span class="text-xs sm:text-sm font-medium text-[#00598a] dark:text-[#72becf] text-right">
                                     Seu trabalho → Seu patrimônio
                                 </span>
                             </div>
@@ -1121,7 +1157,7 @@
         </footer>
     </main>
 
-    <!-- MOTOR JAVASCRIPT: THREE.JS 3D PARTICLE ENGINE + SCROLL SYNC -->
+    <!-- MOTOR JAVASCRIPT: INTERAÇÕES DO SITE + SCROLL SYNC (V20 sem partículas 3D) -->
     <script>
         if (typeof lucide !== 'undefined') {
             lucide.createIcons();
@@ -1230,17 +1266,6 @@
             });
         }
 
-        const themeToggleBtn = document.getElementById('theme-toggle');
-        const htmlElement = document.documentElement;
-
-        if (themeToggleBtn) {
-            themeToggleBtn.addEventListener('click', () => {
-                htmlElement.classList.toggle('dark');
-                const isDark = htmlElement.classList.contains('dark');
-                updateParticleTheme(isDark);
-            });
-        }
-
         window.sendContactEmail = function(btn) {
             var nome = (document.getElementById('contato-nome') || {}).value || '';
             var contato = (document.getElementById('contato-email-whatsapp') || {}).value || '';
@@ -1322,9 +1347,8 @@
 
                 target.scrollIntoView({ behavior: 'smooth' });
 
-                if (typeof setShapeTarget === 'function' && shapeName) {
-                    setShapeTarget(shapeName);
-                }
+                updateActiveNav(sectionId);
+                applySectionTheme(sectionId);
 
                 scrollTimeout = setTimeout(() => {
                     isProgrammaticScroll = false;
@@ -1335,350 +1359,59 @@
             }
         };
 
-        const canvas = document.getElementById('webgl-canvas');
-        const scene = new THREE.Scene();
-
-        const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-        camera.position.z = 180;
-
-        const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-
-        const PARTICLE_COUNT = 20000;
-        const geometry = new THREE.BufferGeometry();
-
-        const currentPositions = new Float32Array(PARTICLE_COUNT * 3);
-        const targetPositions = new Float32Array(PARTICLE_COUNT * 3);
-        const colors = new Float32Array(PARTICLE_COUNT * 3);
-        const sizes = new Float32Array(PARTICLE_COUNT);
-
-        const palette = [
-            new THREE.Color('#003a5e'),
-            new THREE.Color('#1f4c59'),
-            new THREE.Color('#2b6473'),
-            new THREE.Color('#145e70'),
-            new THREE.Color('#3a7d94'),
-            new THREE.Color('#5b3a9e')
-        ];
-
-        const shapeTargets = {
-            sparkle: new Float32Array(PARTICLE_COUNT * 3),
-            candlestick: new Float32Array(PARTICLE_COUNT * 3),
-            rubik: new Float32Array(PARTICLE_COUNT * 3),
-            barchart: new Float32Array(PARTICLE_COUNT * 3),
-            decotext: new Float32Array(PARTICLE_COUNT * 3)
+        const sections = ['hero', 'solucoes', 'metodologia', 'performance', 'blocos', 'portfolio-view'];
+        const navIdMap = {
+            'hero': 'hero',
+            'solucoes': 'estrategia',
+            'metodologia': 'metodologia',
+            'performance': 'rentabilidade',
+            'blocos': 'avaliacao',
+            'portfolio-view': 'rentabilidade'
         };
 
-        function createParticleTexture() {
-            const canvasTex = document.createElement('canvas');
-            canvasTex.width = 64;
-            canvasTex.height = 64;
-            const ctxTex = canvasTex.getContext('2d');
+        /* V20: seções a partir da Rentabilidade (inclusive) usam o modo claro */
+        const LIGHT_SECTIONS = ['performance', 'blocos', 'portfolio-view'];
 
-            const grad = ctxTex.createRadialGradient(32, 32, 0, 32, 32, 32);
-            grad.addColorStop(0, 'rgba(255, 255, 255, 1)');
-            grad.addColorStop(0.3, 'rgba(255, 255, 255, 0.8)');
-            grad.addColorStop(0.6, 'rgba(255, 255, 255, 0.2)');
-            grad.addColorStop(1, 'rgba(255, 255, 255, 0)');
-
-            ctxTex.fillStyle = grad;
-            ctxTex.fillRect(0, 0, 64, 64);
-
-            const texture = new THREE.Texture(canvasTex);
-            texture.needsUpdate = true;
-            return texture;
+        function setSiteTheme(isDark) {
+            document.documentElement.classList.toggle('dark', !!isDark);
         }
 
-        for (let i = 0; i < PARTICLE_COUNT; i++) {
-            const i3 = i * 3;
-            shapeTargets.sparkle[i3] = (Math.random() - 0.5) * 450;
-            shapeTargets.sparkle[i3 + 1] = (Math.random() - 0.5) * 350;
-            shapeTargets.sparkle[i3 + 2] = (Math.random() - 0.5) * 280;
+        function applySectionTheme(sectionId) {
+            setSiteTheme(LIGHT_SECTIONS.indexOf(sectionId) === -1);
         }
 
-        const numCandles = 16;
-        const candleWidth = 140;
-        for (let i = 0; i < PARTICLE_COUNT; i++) {
-            const i3 = i * 3;
-            const candleIndex = Math.floor(Math.random() * numCandles);
-            const cx = -70 + (candleIndex / (numCandles - 1)) * candleWidth;
-            
-            const openCloseSpread = (Math.random() - 0.5) * 40;
-            const baseCenterY = Math.sin(candleIndex * 0.8) * 20;
-            const openY = baseCenterY + openCloseSpread * 0.5;
-            const closeY = baseCenterY - openCloseSpread * 0.5;
-            const lowY = Math.min(openY, closeY) - 15 - Math.random() * 15;
-            const highY = Math.max(openY, closeY) + 15 + Math.random() * 15;
-
-            const partType = Math.random();
-            if (partType < 0.35) {
-                shapeTargets.candlestick[i3] = cx + (Math.random() - 0.5) * 8;
-                shapeTargets.candlestick[i3 + 1] = Math.min(openY, closeY) + Math.random() * Math.abs(openY - closeY);
-                shapeTargets.candlestick[i3 + 2] = (Math.random() - 0.5) * 8;
-            } else if (partType < 0.75) {
-                const isTop = Math.random() < 0.5;
-                shapeTargets.candlestick[i3] = cx + (Math.random() - 0.5) * 2.5;
-                shapeTargets.candlestick[i3 + 1] = isTop ? (Math.max(openY, closeY) + Math.random() * (highY - Math.max(openY, closeY))) : (Math.min(openY, closeY) - Math.random() * (Math.min(openY, closeY) - lowY));
-                shapeTargets.candlestick[i3 + 2] = (Math.random() - 0.5) * 5;
-            } else {
-                shapeTargets.candlestick[i3] = (Math.random() - 0.5) * 180;
-                shapeTargets.candlestick[i3 + 1] = (Math.random() - 0.5) * 120;
-                shapeTargets.candlestick[i3 + 2] = (Math.random() - 0.5) * 40;
-            }
-        }
-
-        for (let i = 0; i < PARTICLE_COUNT; i++) {
-            const i3 = i * 3;
-            const cubeSize = 110;
-            const gridCount = 3;
-            
-            const partType = Math.random();
-            if (partType < 0.65) {
-                const face = Math.floor(Math.random() * 6);
-                let fx = (Math.random() - 0.5) * cubeSize;
-                let fy = (Math.random() - 0.5) * cubeSize;
-                let fz = (Math.random() - 0.5) * cubeSize;
-                
-                if (face === 0) fx = cubeSize / 2;
-                else if (face === 1) fx = -cubeSize / 2;
-                else if (face === 2) fy = cubeSize / 2;
-                else if (face === 3) fy = -cubeSize / 2;
-                else if (face === 4) fz = cubeSize / 2;
-                else fz = -cubeSize / 2;
-                
-                shapeTargets.rubik[i3] = Math.round(fx / (cubeSize / gridCount)) * (cubeSize / gridCount) + (Math.random() - 0.5) * 8;
-                shapeTargets.rubik[i3 + 1] = Math.round(fy / (cubeSize / gridCount)) * (cubeSize / gridCount) + (Math.random() - 0.5) * 8;
-                shapeTargets.rubik[i3 + 2] = Math.round(fz / (cubeSize / gridCount)) * (cubeSize / gridCount) + (Math.random() - 0.5) * 8;
-            } else {
-                shapeTargets.rubik[i3] = (Math.random() - 0.5) * cubeSize * 1.3;
-                shapeTargets.rubik[i3 + 1] = (Math.random() - 0.5) * cubeSize * 1.3;
-                shapeTargets.rubik[i3 + 2] = (Math.random() - 0.5) * cubeSize * 1.3;
-            }
-        }
-
-        const numBars = 8;
-        const totalBarWidth = 140;
-        for (let i = 0; i < PARTICLE_COUNT; i++) {
-            const i3 = i * 3;
-            const barIndex = Math.floor(Math.random() * numBars);
-            const bx = -70 + (barIndex / (numBars - 1)) * totalBarWidth;
-            
-            const barHeight = 35 + (barIndex * 16) + Math.random() * 8;
-            const barBaseY = -55;
-            
-            const partType = Math.random();
-            if (partType < 0.75) {
-                shapeTargets.barchart[i3] = bx + (Math.random() - 0.5) * 8;
-                shapeTargets.barchart[i3 + 1] = barBaseY + Math.random() * barHeight;
-                shapeTargets.barchart[i3 + 2] = (Math.random() - 0.5) * 12;
-            } else if (partType < 0.94) {
-                const trendProgress = barIndex / (numBars - 1);
-                const trendY = barBaseY + 25 + trendProgress * 110;
-                shapeTargets.barchart[i3] = bx + (Math.random() - 0.5) * 6;
-                shapeTargets.barchart[i3 + 1] = trendY + (Math.random() - 0.5) * 6;
-                shapeTargets.barchart[i3 + 2] = (Math.random() - 0.5) * 8;
-            } else {
-                shapeTargets.barchart[i3] = (Math.random() - 0.5) * 180;
-                shapeTargets.barchart[i3 + 1] = (Math.random() - 0.5) * 80;
-                shapeTargets.barchart[i3 + 2] = (Math.random() - 0.5) * 20;
-            }
-        }
-
-        for (let i = 0; i < PARTICLE_COUNT; i++) {
-            const i3 = i * 3;
-            const t = Math.PI * 2 * Math.random();
-            const u = Math.PI * (Math.random() - 0.5);
-            
-            const x = 14 * Math.pow(Math.sin(t), 3) * Math.cos(u);
-            const y = (11 * Math.cos(t) - 4 * Math.cos(2 * t) - 1.5 * Math.cos(3 * t) - 0.5 * Math.cos(4 * t)) * Math.cos(u);
-            const z = 12 * Math.sin(u) * (0.8 - Math.abs(Math.cos(t)) * 0.3);
-
-            const scaleFactor = 4.2;
-            shapeTargets.decotext[i3] = x * scaleFactor + (Math.random() - 0.5) * 12;
-            shapeTargets.decotext[i3 + 1] = y * scaleFactor + (Math.random() - 0.5) * 12;
-            shapeTargets.decotext[i3 + 2] = z * scaleFactor + (Math.random() - 0.5) * 16;
-        }
-
-        for (let i = 0; i < PARTICLE_COUNT; i++) {
-            const i3 = i * 3;
-            currentPositions[i3] = shapeTargets.sparkle[i3];
-            currentPositions[i3 + 1] = shapeTargets.sparkle[i3 + 1];
-            currentPositions[i3 + 2] = shapeTargets.sparkle[i3 + 2];
-
-            targetPositions[i3] = currentPositions[i3];
-            targetPositions[i3 + 1] = currentPositions[i3 + 1];
-            targetPositions[i3 + 2] = currentPositions[i3 + 2];
-
-            const color = palette[Math.floor(Math.random() * palette.length)];
-            colors[i3] = color.r;
-            colors[i3 + 1] = color.g;
-            colors[i3 + 2] = color.b;
-
-            sizes[i] = Math.random() * 2.2 + 0.8;
-        }
-
-        geometry.setAttribute('position', new THREE.BufferAttribute(currentPositions, 3));
-        geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-        geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
-
-        const material = new THREE.PointsMaterial({
-            size: 2.6,
-            vertexColors: true,
-            map: createParticleTexture(),
-            transparent: true,
-            opacity: 0.3,
-            blending: THREE.AdditiveBlending,
-            depthWrite: false
-        });
-
-        const particleSystem = new THREE.Points(geometry, material);
-        scene.add(particleSystem);
-        updateParticleTheme(document.documentElement.classList.contains('dark'));
-
-        function updateParticleTheme(isDark) {
-            if (isDark) {
-                material.blending = THREE.AdditiveBlending;
-                material.opacity = 0.3;
-            } else {
-                material.blending = THREE.NormalBlending;
-                material.opacity = 0.3;
-            }
-            material.needsUpdate = true;
-        }
-
-        window.setShapeTarget = function(shapeName) {
-            if (!shapeTargets[shapeName]) return;
-            window.currentShape = shapeName;
-            const targetArray = shapeTargets[shapeName];
-            for (let i = 0; i < PARTICLE_COUNT * 3; i++) {
-                targetPositions[i] = targetArray[i];
-            }
-
-            const navIdMap = {
-                'sparkle': 'hero',
-                'candlestick': 'estrategia',
-                'rubik': 'metodologia',
-                'barchart': 'rentabilidade',
-                'decotext': 'avaliacao'
-            };
-
+        function updateActiveNav(sectionId) {
+            const activeNavId = 'nav-' + (navIdMap[sectionId] || sectionId);
             document.querySelectorAll('.nav-link').forEach(btn => btn.classList.remove('active'));
-            const activeNavId = `nav-${navIdMap[shapeName] || shapeName}`;
             const activeBtn = document.getElementById(activeNavId);
             if (activeBtn) activeBtn.classList.add('active');
-        };
-
-        const sections = ['hero', 'solucoes', 'metodologia', 'performance', 'blocos', 'portfolio-view'];
-        const shapesMap = {
-            'hero': 'sparkle',
-            'solucoes': 'candlestick',
-            'metodologia': 'rubik',
-            'performance': 'barchart',
-            'blocos': 'decotext',
-            'portfolio-view': 'barchart'
-        };
+        }
 
         function checkActiveSectionOnScroll() {
             if (isProgrammaticScroll) return;
 
             const scrollY = window.scrollY;
-            if (scrollY < 120) {
-                if (window.currentShape !== 'sparkle') setShapeTarget('sparkle');
-                return;
-            }
-
-            for (let i = sections.length - 1; i >= 0; i--) {
-                const id = sections[i];
-                const el = document.getElementById(id);
-                if (el && el.offsetParent !== null) {
-                    const rect = el.getBoundingClientRect();
-                    if (rect.top <= window.innerHeight * 0.4) {
-                        const targetShape = shapesMap[id];
-                        if (targetShape && window.currentShape !== targetShape) {
-                            setShapeTarget(targetShape);
+            let activeId = 'hero';
+            if (scrollY >= 120) {
+                for (let i = sections.length - 1; i >= 0; i--) {
+                    const id = sections[i];
+                    const el = document.getElementById(id);
+                    if (el && el.offsetParent !== null) {
+                        const rect = el.getBoundingClientRect();
+                        if (rect.top <= window.innerHeight * 0.4) {
+                            activeId = id;
+                            break;
                         }
-                        break;
                     }
                 }
             }
+
+            updateActiveNav(activeId);
+            applySectionTheme(activeId);
         }
 
         window.addEventListener('scroll', checkActiveSectionOnScroll, { passive: true });
-
-        const mouse = { x: 0, y: 0, targetX: 0, targetY: 0 };
-        window.addEventListener('mousemove', (e) => {
-            mouse.targetX = (e.clientX / window.innerWidth - 0.5) * 2;
-            mouse.targetY = -(e.clientY / window.innerHeight - 0.5) * 2;
-        });
-
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        });
-
-        let clock = new THREE.Clock();
-
-        function animate() {
-            requestAnimationFrame(animate);
-
-            const elapsedTime = clock.getElapsedTime();
-
-            mouse.x += (mouse.targetX - mouse.x) * 0.05;
-            mouse.y += (mouse.targetY - mouse.y) * 0.05;
-
-            const isHeartShape = window.currentShape === 'decotext';
-            const isRubikShape = window.currentShape === 'rubik';
-            const rotSpeedMultiplier = isHeartShape ? 0.8 : 1.0;
-
-            particleSystem.rotation.y = elapsedTime * 0.01 * rotSpeedMultiplier + mouse.x * 0.35;
-            particleSystem.rotation.x = Math.sin(elapsedTime * 0.008 * rotSpeedMultiplier) * 0.1 + mouse.y * 0.25;
-
-            const positionsAttr = geometry.attributes.position;
-            const posArray = positionsAttr.array;
-
-            const lerpFactor = isHeartShape ? 0.06 : 0.04;
-
-            let pulseScale = 1.0;
-            if (isHeartShape) {
-                const beat = Math.sin(elapsedTime * 0.45) * 0.5 + Math.sin(elapsedTime * 0.9) * 0.15;
-                pulseScale = 1.0 + beat * 0.12;
-            }
-
-            for (let i = 0; i < PARTICLE_COUNT; i++) {
-                const i3 = i * 3;
-                let tx = targetPositions[i3];
-                let ty = targetPositions[i3 + 1];
-                let tz = targetPositions[i3 + 2];
-
-                if (isHeartShape) {
-                    tx *= pulseScale;
-                    ty *= pulseScale;
-                    tz *= pulseScale;
-                }
-
-                if (isRubikShape) {
-                    const blockPhase = Math.floor(i / (PARTICLE_COUNT / 4));
-                    const waveOffset = Math.sin(elapsedTime * 0.2 + blockPhase * 1.57) * 12;
-                    if (blockPhase === 0) tx += waveOffset;
-                    else if (blockPhase === 1) ty += waveOffset;
-                    else if (blockPhase === 2) tz += waveOffset;
-                }
-
-                posArray[i3] += (tx - posArray[i3]) * lerpFactor;
-                posArray[i3 + 1] += (ty - posArray[i3 + 1]) * lerpFactor;
-                posArray[i3 + 2] += (tz - posArray[i3 + 2]) * lerpFactor;
-            }
-
-            positionsAttr.needsUpdate = true;
-            renderer.render(scene, camera);
-        }
-
-        window.onload = function() {
-            window.currentShape = 'sparkle';
-            animate();
-        };
+        checkActiveSectionOnScroll();
     </script>
 
     <!-- ============================================================
