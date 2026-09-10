@@ -1283,6 +1283,10 @@
         if (currentClient) renderPortfolio(currentClient);
       });
     }
+
+    if (new URLSearchParams(location.search).get('login') === '1') {
+      openLoginModal();
+    }
   }
 
   if (document.readyState === 'loading') {
