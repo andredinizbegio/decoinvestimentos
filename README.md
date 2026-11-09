@@ -55,6 +55,11 @@ iterações). O `data.json` público contém apenas o *ciphertext* (mais o login
 embutida no site: a senha digitada no login vira a chave de descriptografia no
 navegador (Web Crypto). Senha correta → carteira aparece; senha errada → nada.
 
+A **carteira de referência** (a do próprio Deco, exibida na seção pública de
+rentabilidade) fica em texto claro no `data.json`, porém **sanitizada**: o WF11
+exporta apenas posição, proventos e resumo usados nos gráficos, sem login,
+senha, corretora, preços médios ou outros dados privados.
+
 ## Segurança
 
 > ✅ **Confidencialidade:** mesmo quem baixe o `data.json` ou inspecione o HTML vê

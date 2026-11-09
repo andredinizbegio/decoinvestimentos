@@ -314,7 +314,8 @@
   /* ----------------------------------------------------------
    * Cards de resumo (resumo.json)
    * ---------------------------------------------------------- */
-  function renderResume(client) {
+  function renderResume(client, options) {
+    var isPublic = !!(options && options.public);
     var r = client.resume || {};
     var fields = [
       { label: 'PATRIMÔNIO (NAV)', icon: 'target', value: fmtCurrency0(r.nav) },
@@ -329,12 +330,14 @@
 
     var avgs = monthlyAverages(client);
     var html = fields.map(function (f) {
+      var blockValue = isPublic && f.label !== 'TWR TOTAL' && f.label !== 'IRR';
+      var valueHtml = blockValue ? '<span class="deco-blur">' + f.value + '</span>' : f.value;
       if (f.label === 'PROVENTOS TOTAIS') {
         return (
           '<div class="glass-card border rounded-2xl p-4 flex flex-col justify-between min-w-0 md:col-span-2">' +
             '<div class="flex items-center justify-between gap-2 text-[10px] font-bold uppercase tracking-wider dark:text-white text-slate-600">' +
               '<span class="flex items-center gap-2"><i data-lucide="' + f.icon + '" class="w-3.5 h-3.5 text-[#00598a] dark:text-[#72becf] shrink-0"></i><span class="truncate">' + f.label + '</span></span>' +
-              '<span class="text-sm font-extrabold text-[#00598a] dark:text-slate-200 tabular-nums whitespace-nowrap">' + f.value + '</span>' +
+              '<span class="text-sm font-extrabold text-[#00598a] dark:text-slate-200 tabular-nums whitespace-nowrap">' + valueHtml + '</span>' +
             '</div>' +
             '<div class="mt-2 flex flex-col gap-1.5 border-t border-slate-200 dark:border-slate-800/60 pt-2">' +
               '<div class="flex items-center justify-between gap-3"><span class="text-[10px] text-slate-600 dark:text-slate-300 whitespace-nowrap">Média Últimos 12M (Real)</span><span class="text-[11px] font-semibold tabular-nums whitespace-nowrap text-slate-600 dark:text-slate-300">' + fmtCurrency0(avgs.avgReal) + '</span></div>' +
@@ -349,13 +352,41 @@
             '<i data-lucide="' + f.icon + '" class="w-3.5 h-3.5 text-[#00598a] dark:text-[#72becf] shrink-0"></i>' +
             '<span class="truncate">' + f.label + '</span>' +
           '</div>' +
-          '<div class="text-sm sm:text-base font-extrabold text-[#00598a] dark:text-slate-200 mt-2">' + f.value + '</div>' +
+          '<div class="text-sm sm:text-base font-extrabold text-[#00598a] dark:text-slate-200 mt-2">' + valueHtml + '</div>' +
         '</div>'
       );
     }).join('');
 
     if (!html) return '';
     return '<div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-7 gap-4">' + html + '</div>';
+  }
+
+  /* ----------------------------------------------------------
+   * Carteira de referência (seção pública do site)
+   *
+   * A seção pública não é estática: o WF11 exporta `reference` no
+   * site-data/data.json com a posição, proventos e resumo da carteira
+   * padrão (sanitizados) e este renderizador mantém a página atualizada
+   * a cada publicação. Os valores monetários/tickers continuam borrados
+   * via .deco-blur, como no layout original.
+   * ---------------------------------------------------------- */
+  function renderPublicReference() {
+    var ref = DATA.reference;
+    if (!ref || !Array.isArray(ref.position)) return;
+
+    var allocation = document.getElementById('deco-public-allocation');
+    if (allocation) allocation.innerHTML = renderAllocation(ref, { public: true });
+
+    var semiannual = document.getElementById('deco-public-semiannual');
+    if (semiannual) semiannual.innerHTML = renderSemiannual(ref, { public: true });
+
+    var estimates = document.getElementById('deco-public-estimates');
+    if (estimates) estimates.innerHTML = renderEstimates(ref, { public: true });
+
+    var resume = document.getElementById('deco-public-resume');
+    if (resume) resume.innerHTML = renderResume(ref, { public: true });
+
+    if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
   }
 
   /* ----------------------------------------------------------
@@ -562,7 +593,8 @@
     }]);
   }
 
-  function renderAllocation(client) {
+  function renderAllocation(client, options) {
+    var isPublic = !!(options && options.public);
     var items = allocationItems(client);
     if (!items.length) return card('Posição Atual', 'Nenhuma posição encontrada.', '<p class="text-xs dark:text-slate-300 text-slate-600">Execute o WF10 para carregar a carteira.</p>');
 
@@ -592,10 +624,13 @@
 
     var legend = items.map(function (item, index) {
       var color = item.symbol === 'Outros' ? OTHERS_COLOR : DONUT_PALETTE[index % DONUT_PALETTE.length];
+      var symbolHtml = escapeHtml(item.symbol);
+      var titleAttr = isPublic ? '' : ' title="' + escapeHtml(fmtCurrency(item.value)) + '"';
+      if (isPublic) symbolHtml = '<span class="deco-blur">' + symbolHtml + '</span>';
       return (
-        '<div class="flex items-center gap-1.5" title="' + escapeHtml(fmtCurrency(item.value)) + '">' +
+        '<div class="flex items-center gap-1.5"' + titleAttr + '>' +
           '<span class="w-2.5 h-2.5 rounded-full" style="background-color:' + color + '"></span>' +
-          '<span class="dark:text-slate-300 text-slate-700">' + escapeHtml(item.symbol) + ' (' + fmtPct(item.percent, 1) + ')</span>' +
+          '<span class="dark:text-slate-300 text-slate-700">' + symbolHtml + ' (' + fmtPct(item.percent, 1) + ')</span>' +
         '</div>'
       );
     }).join('');
@@ -611,7 +646,9 @@
         '<div class="grid grid-cols-2 gap-x-4 gap-y-2 text-[11px] font-medium">' + legend + '</div>' +
       '</div>';
 
-    return card('Posição Atual', 'Total ' + fmtCurrency(total), html);
+    var totalHtml = fmtCurrency(total);
+    if (isPublic) totalHtml = '<span class="deco-blur">' + totalHtml + '</span>';
+    return card('Posição Atual', 'Total ' + totalHtml, html);
   }
 
   /* ----------------------------------------------------------
@@ -632,7 +669,8 @@
     return m[1].slice(2) + 'S' + (m[2] === 'H1' ? '1' : '2');
   }
 
-  function renderSemiannual(client) {
+  function renderSemiannual(client, options) {
+    var isPublic = !!(options && options.public);
     var bySemester = new Map();
     for (var i = 0; i < client.dividends.length; i++) {
       var row = client.dividends[i];
@@ -654,9 +692,11 @@
     var bars = points.map(function (p, index) {
       var isCurrent = p.semester === current;
       var height = Math.round((p.total / max) * 150);
+      var valueHtml = fmtCompact(p.total);
+      if (isPublic) valueHtml = '<span class="deco-blur">' + valueHtml + '</span>';
       return (
         '<div class="flex-1 flex flex-col items-center gap-1 z-10 self-stretch justify-end rounded-t min-w-0" data-chart="semiannual" data-index="' + index + '">' +
-          '<span class="text-[9px] text-slate-600 dark:text-white font-mono">' + fmtCompact(p.total) + '</span>' +
+          '<span class="text-[9px] text-slate-600 dark:text-white font-mono">' + valueHtml + '</span>' +
           '<div class="w-full rounded-t animate-bar ' + (isCurrent ? 'bg-slate-500 shadow-lg' : 'bg-[#387b8d]') + '" style="height:' + Math.max(height, 6) + 'px; animation-delay:' + (index * 0.05) + 's;"></div>' +
           '<span class="deco-bar-label-v text-[9px] text-slate-600 dark:text-slate-300">' + semesterLabel(p.semester) + '</span>' +
         '</div>'
@@ -687,7 +727,8 @@
     return MONTHS_SHORT[date.getMonth()] + '/' + String(date.getFullYear()).slice(2);
   }
 
-  function renderEstimates(client) {
+  function renderEstimates(client, options) {
+    var isPublic = !!(options && options.public);
     var now = new Date();
     var currentYear = now.getFullYear();
     var currentMonth = now.getMonth();
@@ -748,9 +789,11 @@
     CHART_STATE.estimates = points;
     var bars = points.map(function (pt, index) {
       var height = Math.round((pt.value / max) * 150);
+      var valueHtml = fmtCompact(pt.value);
+      if (isPublic) valueHtml = '<span class="deco-blur">' + valueHtml + '</span>';
       return (
         '<div class="flex-1 flex flex-col items-center gap-1 min-w-0" data-chart="estimates" data-index="' + index + '">' +
-          '<span class="text-[8px] text-slate-600 dark:text-white">' + fmtCompact(pt.value) + '</span>' +
+          '<span class="text-[8px] text-slate-600 dark:text-white">' + valueHtml + '</span>' +
           '<div class="w-2 md:w-4 rounded-t animate-bar ' + (pt.isEstimate ? 'bg-slate-500' : 'bg-[#387b8d]') + '" style="height:' + Math.max(height, 4) + 'px; animation-delay:' + (index * 0.02) + 's;"></div>' +
           '<span class="deco-bar-label-v text-[8px] ' + (pt.isEstimate && index === points.length - 1 ? 'text-white font-bold' : 'text-slate-600 dark:text-slate-300') + '">' + pt.axisLabel + '</span>' +
         '</div>'
@@ -1255,6 +1298,8 @@
    * Init
    * ---------------------------------------------------------- */
   function init() {
+    renderPublicReference();
+
     var loginBtn = document.getElementById('login-btn');
     if (loginBtn) loginBtn.addEventListener('click', openLoginModal);
 
